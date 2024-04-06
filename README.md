@@ -1,0 +1,1 @@
+# Generator of Intellireader messages
