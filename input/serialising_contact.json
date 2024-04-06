@@ -1,0 +1,17 @@
+{
+    "messages":
+    [
+        {   
+            "title": "Power ON Card",
+            "moduleID": 2,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "power_on_card",
+            "data":
+            {
+                "blue": true
+            },
+            "checksumValid": true
+        }
+    ]
+}

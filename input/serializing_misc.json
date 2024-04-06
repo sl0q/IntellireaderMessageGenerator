@@ -1,0 +1,190 @@
+{
+    "messages":
+    [
+        {   
+            "title": "leds_state_example",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "set_leds_state",
+            "data":
+            {
+                "blue": true
+            },
+            "checksumValid": true
+        },
+        {   
+            "title": "leds_state_all",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "set_leds_state",
+            "data":
+            {
+                "blue": true,
+                "red": true,
+                "yellow": true,
+                "green": true,
+                "lcd_backlight": true
+            },
+            "checksumValid": true
+        },
+        {
+            "title": "reboot_normal_mode",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 3,
+            "command": "reboot_device",
+            "data":
+            {
+                "operationMode": "NORMAL_MODE"
+            }
+        },
+        {
+            "title": "reboot_management_mode",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 4,
+            "command": "reboot_device",
+            "data":
+            {
+                "operationMode": "MANAGEMENT_MODE"
+            }
+        },
+        {
+            "title": "reboot_factory_mode",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 5,
+            "command": "reboot_device",
+            "data":
+            {
+                "operationMode": "FACTORY_MODE"
+            }
+        },
+        {
+            "title": "just_read_device_info",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 6,
+            "command": "read_device_info"
+        },
+        {
+            "title": "Bip_Bop sound",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 7,
+            "command": "make_sound",
+            "data":
+            {
+                "melody":
+                [
+                    {
+                        "durationMs": 100,
+                        "frequencyHz": 1500,
+                        "silenceDurationMs": 150
+                    },
+                    {
+                        "durationMs": 100,
+                        "frequencyHz": 1000
+                    }
+                ]
+            }
+        },
+        {
+            "title": "get_echo_without_pending",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 8,
+            "command": "get_echo",
+            "data":
+            {
+                "sendPending": false,
+                "replySize": 8,
+                "data": "No pending echo"
+            }
+        },
+        {
+            "title": "get_echo_with_pending",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 9,
+            "command": "get_echo",
+            "data":
+            {
+                "sendPending": true,
+                "replySize": 16,
+                "data": "Pending echo"
+            }
+        },
+        {
+            "title": "get_device_status_message",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 10,
+            "command": "get_device_status"
+        },
+        {
+            "title": "get_device_statistic_message",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 11,
+            "command": "get_device_statistic"
+        },
+        {
+            "title": "change_lan_settings_manual",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 12,
+            "command": "change_lan_settings",
+            "data":
+            {
+                "lanSettings":
+                {
+                    "manual":
+                    {
+                        "localAddress": "192.168.0.2",
+                        "netmask": "255.255.255.0",
+                        "gateway": "192.168.0.1"
+                    }
+                }
+            }
+        },
+        {
+            "title": "change_lan_settings_dhcp",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 13,
+            "command": "change_lan_settings",
+            "data":
+            {
+                "lanSettings": 
+                {
+                    "dhcp": {}
+                }
+            }
+        },
+        {
+            "title": "change_baudrate_115200",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 13,
+            "command": "change_baudrate",
+            "data":
+            {
+                "baudrate": "BPS_115200"
+            }
+        },
+        {
+            "title": "change_baudrate_230400",
+            "moduleID": 1,
+            "messageType": 1,
+            "messageID": 13,
+            "command": "change_baudrate",
+            "data":
+            {
+                "baudrate": "BPS_230400"
+            }
+        }          
+    ]
+}
