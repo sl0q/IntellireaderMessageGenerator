@@ -9,7 +9,9 @@
 #include <google/protobuf/text_format.h>
 // #include <google/protobuf/util/json_util.h>
 
-#include "../proto_src/intellireader/commands2.pb.h"
+// #include "../proto_src/intellireader/commands2.pb.h"
+#include "../proto_src/intellireader/commands3.pb.h"
+
 #include "../proto_src/intellireader/misc/leds.pb.h"
 #include "../proto_src/intellireader/misc/reboot.pb.h"
 #include "../proto_src/intellireader/misc/device.pb.h"
@@ -18,6 +20,11 @@
 #include "../proto_src/intellireader/misc/stats.pb.h"
 #include "../proto_src/intellireader/misc/lan_settings.pb.h"
 #include "../proto_src/intellireader/misc/baudrate.pb.h"
+
+#include "../proto_src/intellireader/contact/power_on.pb.h"
+#include "../proto_src/intellireader/contact/power_off.pb.h"
+#include "../proto_src/intellireader/contact/card_slot.pb.h"
+#include "../proto_src/intellireader/contact/iso7816_4.pb.h"
 
 #include "nlohmann/json.hpp"
 
@@ -56,6 +63,10 @@ private:
     Payload &generate_get_device_statistic(json data);
     Payload &generate_change_lan_settings(json data);
     Payload &generate_change_baudrate(json data);
+
+    Payload &generate_power_on(json data);
+    Payload &generate_power_off(json data);
+    Payload &generate_transmit_apdu(json data);
 
 public:
     MessageCreator(std::string inputJsonPath);

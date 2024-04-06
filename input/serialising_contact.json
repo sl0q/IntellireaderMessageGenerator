@@ -2,16 +2,49 @@
     "messages":
     [
         {   
-            "title": "Power ON Card",
+            "title": "Power ON Card main slot",
             "moduleID": 2,
             "messageType": 1,
             "messageID": 1,
             "command": "power_on_card",
             "data":
             {
-                "blue": true
-            },
-            "checksumValid": true
+                "slot": "MAIN_SLOT"
+            }
+        },
+        {   
+            "title": "Power ON Card sam2 slot",
+            "moduleID": 2,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "power_on_card",
+            "data":
+            {
+                "slot": "SAM2_SLOT"
+            }
+        },
+        {   
+            "title": "Power OFF Card main slot",
+            "moduleID": 2,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "power_off_card",
+            "data":
+            {
+                "slot": "MAIN_SLOT"
+            }
+        },
+        {   
+            "title": "Transmit Apdu (get version from example)",
+            "moduleID": 2,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "transmit_apdu",
+            "data":
+            {
+                "slot": "MAIN_SLOT",
+                "commandApdu": "\\x80\\x60\\x00\\x00\\x00"
+            }
         }
     ]
 }

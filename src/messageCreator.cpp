@@ -41,7 +41,9 @@ google::protobuf::Message *MessageCreator::find_protobuf_module(uint8_t moduleID
         this->messageTypeStr = "Miscellaneous";
         return new Miscellaneous();
 
-        // case 2:
+    case 2:
+        // ContactLevel2 не описан в документации
+        return new ContactLevel1();
         //     return new ContactLevel1();
 
         // case 3:
@@ -124,32 +126,40 @@ void MessageCreator::generate_messages(const std::string inputFilePath, const st
             throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":messageID] field in [" + inputFilePath + "] file.");
         this->messageID = newJsonMessage.at("messageID").get<uint8_t>();
 
-        this->msg = find_protobuf_module(moduleID);
-
-        if (moduleID == 1) // Miscelaneous
+        this->msg = find_protobuf_module(this->moduleID);
+        if (!this->msg)
         {
-            std::ofstream file(outputFilePath, std::ofstream::app);
-            if (!file.is_open())
-                throw ex::CantOpenFile("Failed to open file " + outputFilePath);
+            std::cout << "Unrecognised IR module\n"
+                      << "MSG_ID: " << this->messageIndex
+                      << "Module_ID: " << moduleID;
+            continue;
+        }
 
-            file << messageTitle << "\n";
+        std::ofstream file(outputFilePath, std::ofstream::app);
+        if (!file.is_open())
+            throw ex::CantOpenFile("Failed to open file " + outputFilePath);
 
-            std::string command;
-            json data;
-            bool isChecksumValid = true;
+        file << messageTitle << "\n";
+        std::string command;
+        json data;
+        bool isChecksumValid = true;
 
-            if (newJsonMessage.count("command") == 0)
-                throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":command] field in [" + inputFilePath + "] file.");
-            command = newJsonMessage.at("command").get<std::string>();
+        if (newJsonMessage.count("command") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":command] field in [" + inputFilePath + "] file.");
+        command = newJsonMessage.at("command").get<std::string>();
 
-            if (newJsonMessage.count("data") != 0)
-                data = newJsonMessage["data"];
+        if (newJsonMessage.count("data") != 0)
+            data = newJsonMessage["data"];
 
-            if (newJsonMessage.count("checksumValid") != 0)
-                isChecksumValid = newJsonMessage.at("checksumValid").get<bool>();
+        if (newJsonMessage.count("checksumValid") != 0)
+            isChecksumValid = newJsonMessage.at("checksumValid").get<bool>();
 
-            Payload *payload;
+        Payload *payload;
 
+        switch (this->moduleID)
+        {
+        case 1: // Miscellaneous
+        {
             if ("set_leds_state" == command)
                 payload = &generate_set_leds_state(data);
             else if ("reboot_device" == command)
@@ -169,21 +179,32 @@ void MessageCreator::generate_messages(const std::string inputFilePath, const st
             else if ("change_baudrate" == command)
                 payload = &generate_change_baudrate(data);
 
-            auto m = compose_message(*payload, isChecksumValid);
-            file << m.getDataAsString() << "\n"
-                 << bs64::base64_encode(m.getData()) << "\n"
-                 << m.getDebugString() << "\n\n";
-
-            delete payload;
-            file << "###################################################################\n\n\n";
-
-            file.close();
-
-            ++this->messageIndex;
+            break;
         }
-        else
+        case 2: //  ContactLevel1
         {
+            if ("power_on_card" == command)
+                payload = &generate_power_on(data);
+            else if ("power_off_card" == command)
+                payload = &generate_power_off(data);
+            else if ("transmit_apdu" == command)
+                payload = &generate_transmit_apdu(data);
         }
+        default:
+            break;
+        }
+
+        auto m = compose_message(*payload, isChecksumValid);
+        file << m.getDataAsString() << "\n"
+             << bs64::base64_encode(m.getData()) << "\n"
+             << m.getDebugString() << "\n\n";
+
+        delete payload;
+        file << "###################################################################\n\n\n";
+
+        file.close();
+
+        ++this->messageIndex;
     }
 }
 
@@ -455,6 +476,84 @@ Payload &MessageCreator::generate_change_baudrate(json data)
 
     std::cout << this->msg->DebugString() << std::endl;
 
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_power_on(json data)
+{
+    auto powerOnCard = new contact::power_on::PowerOnCard();
+
+    dynamic_cast<ContactLevel1 *>(this->msg)->set_allocated_power_on_card(powerOnCard);
+
+    if (data.count("slot") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:slot] field in [" + this->inputFilePath + "] file.");
+
+    auto newSlot = new contact::card_slot::CardSlot();
+    if (!contact::card_slot::CardSlot_Parse(data.at("slot").get<std::string>(), newSlot))
+        throw std::invalid_argument("Failed to parse [slot] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data::slot].");
+    powerOnCard->set_slot(*newSlot);
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_power_off(json data)
+{
+    auto powerOffCard = new contact::power_off::PowerOffCard();
+
+    dynamic_cast<ContactLevel1 *>(this->msg)->set_allocated_power_off_card(powerOffCard);
+
+    if (data.count("slot") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:slot] field in [" + this->inputFilePath + "] file.");
+
+    auto newSlot = new contact::card_slot::CardSlot();
+    if (!contact::card_slot::CardSlot_Parse(data.at("slot").get<std::string>(), newSlot))
+        throw std::invalid_argument("Failed to parse [slot] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data::slot].");
+    powerOffCard->set_slot(*newSlot);
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_transmit_apdu(json data)
+{
+    auto transmitApdu = new contact::iso7816_4::TransmitApdu();
+
+    dynamic_cast<ContactLevel1 *>(this->msg)->set_allocated_transmit_apdu(transmitApdu);
+
+    if (data.count("slot") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:slot] field in [" + this->inputFilePath + "] file.");
+    auto newSlot = new contact::card_slot::CardSlot();
+    if (!contact::card_slot::CardSlot_Parse(data.at("slot").get<std::string>(), newSlot))
+        throw std::invalid_argument("Failed to parse [slot] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data::slot].");
+    transmitApdu->set_slot(*newSlot);
+
+    if (data.count("commandApdu") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:commandApdu] field in [" + this->inputFilePath + "] file.");
+    transmitApdu->set_command_apdu(data.at("commandApdu").get<std::string>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
     buf.resize(this->msg->ByteSizeLong());
     int buf_size = buf.size();
     this->msg->SerializeToArray(buf.data(), buf_size);
