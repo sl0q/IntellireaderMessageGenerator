@@ -1,0 +1,35 @@
+{
+    "messages":
+    [
+        {   
+            "title": "Mifare classic auth on clear key",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "mfr_classic_auth_on_clear_key",
+            "data":
+            {
+                "sector_number": 0,
+                "key_type": "TYPE_A",
+                "clear_key": "\\xff\\xff\\xff\\xff\\xff\\xff"
+            }
+        },
+        {   
+            "title": "Mifare classic auth on key from SAMAV2",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 2,
+            "command": "mfr_classic_auth_on_sam_key",
+            "data":
+            {
+                "sector_number": 1,
+                "key_type": "TYPE_A",
+                "av2_args": 
+                {
+                    "slot": "SAM3_SLOT",
+                    "key_number": 3
+                }
+            }
+        }
+    ]
+}

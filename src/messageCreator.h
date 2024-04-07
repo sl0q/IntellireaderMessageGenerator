@@ -10,7 +10,8 @@
 // #include <google/protobuf/util/json_util.h>
 
 // #include "../proto_src/intellireader/commands2.pb.h"
-#include "../proto_src/intellireader/commands3.pb.h"
+// #include "../proto_src/intellireader/commands3.pb.h"
+#include "../proto_src/intellireader/commands4.pb.h"
 
 #include "../proto_src/intellireader/misc/leds.pb.h"
 #include "../proto_src/intellireader/misc/reboot.pb.h"
@@ -25,6 +26,13 @@
 #include "../proto_src/intellireader/contact/power_off.pb.h"
 #include "../proto_src/intellireader/contact/card_slot.pb.h"
 #include "../proto_src/intellireader/contact/iso7816_4.pb.h"
+
+#include "../proto_src/intellireader/contactless/poll_for_token.pb.h"
+#include "../proto_src/intellireader/contactless/emv_removal.pb.h"
+#include "../proto_src/intellireader/contactless/transceive.pb.h"
+#include "../proto_src/intellireader/contactless/iso14443_4.pb.h"
+#include "../proto_src/intellireader/contactless/rf_field.pb.h"
+#include "../proto_src/intellireader/contactless/iso14443_4a.pb.h"
 
 #include "nlohmann/json.hpp"
 
@@ -54,6 +62,7 @@ private:
     google::protobuf::Message *find_protobuf_module(uint8_t moduleID);
     const Msg &compose_message(Payload &generatedPayload, bool isChecksumValid);
 
+    // Miscellaneous
     Payload &generate_set_leds_state(json data);
     Payload &generate_reboot_device(json data);
     Payload &generate_read_device_info(json data);
@@ -64,9 +73,18 @@ private:
     Payload &generate_change_lan_settings(json data);
     Payload &generate_change_baudrate(json data);
 
+    // ContactLevel1
     Payload &generate_power_on(json data);
     Payload &generate_power_off(json data);
     Payload &generate_transmit_apdu(json data);
+
+    // ContactLevel2
+    Payload &generate_poll_for_token(json data);
+    Payload &generate_emv_removal(json data);
+    Payload &generate_tsv_bit_array(json data);
+    Payload &generate_iso14443_4_command(json data);
+    Payload &generate_power_off_field(json data);
+    Payload &generate_request_for_ats(json data);
 
 public:
     MessageCreator(std::string inputJsonPath);

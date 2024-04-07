@@ -1,0 +1,95 @@
+{
+    "messages":
+    [
+        {   
+            "title": "Poll for token during 1000 ms",
+            "moduleID": 3,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "poll_for_token",
+            "data":
+            {
+                "timeout": 1000,
+                "pollingMode": "CONTINOUS_POLLING",
+                "light_up_led": true
+            }
+        },
+        {   
+            "title": "Immediately return response for last card",
+            "moduleID": 3,
+            "messageType": 1,
+            "messageID": 2,
+            "command": "poll_for_token",
+            "data":
+            {
+                "timeout": 0
+            }
+        },
+        {   
+            "title": "Infinitely poll for token (timeout field is absent)",
+            "moduleID": 3,
+            "messageType": 1,
+            "messageID": 3,
+            "command": "poll_for_token",
+            "data":
+            {
+                "pollingMode": "LOW_POWER_POLLING"
+            }
+        },
+        {   
+            "title": "Request to perform EMV Removal procedure no more than 5 seconds",
+            "moduleID": 3,
+            "messageType": 1,
+            "messageID": 4,
+            "command": "emv_removal",
+            "data":
+            {
+                "timeout": 5000
+            }
+        },
+        {   
+            "title": "Transceive data to contactless token",
+            "moduleID": 3,
+            "messageType": 1,
+            "messageID": 5,
+            "command": "tsv_bit_array",
+            "data":
+            {
+                "bitArray":
+                {
+                    "data": "\\x02\\x00\\xa4\\x04\\x00\\x0e\\x32\\x50\\x41\\x59\\x2e\\x53\\x59\\x53\\x2e\\x44\\x44\\x46\\x30\\x31\\x00",
+                    "count": 168
+                },
+                "responseTimeoutUs": 50000,
+                "tx_crc": true,
+                "rx_crc": true,
+                "parity": true
+            }
+        },
+        {   
+            "title": "Transceive ISO14443-4 command",
+            "moduleID": 3,
+            "messageType": 1,
+            "messageID": 6,
+            "command": "iso14443_4_command",
+            "data":
+            {
+                "data": "\\x00\\xa4\\x04\\x00\\x0e\\x32\\x50\\x41\\x59\\x2e\\x53\\x59\\x53\\x2e\\x44\\x44\\x46\\x30\\x31\\x00"
+            }
+        },
+        {   
+            "title": "Power OFF reader’s RF field",
+            "moduleID": 3,
+            "messageType": 1,
+            "messageID": 7,
+            "command": "power_off_field"
+        },
+        {   
+            "title": "Send the RATS command",
+            "moduleID": 3,
+            "messageType": 1,
+            "messageID": 8,
+            "command": "request_for_ats"
+        }
+    ]
+}

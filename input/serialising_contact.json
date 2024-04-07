@@ -16,7 +16,7 @@
             "title": "Power ON Card sam2 slot",
             "moduleID": 2,
             "messageType": 1,
-            "messageID": 1,
+            "messageID": 2,
             "command": "power_on_card",
             "data":
             {
@@ -27,7 +27,7 @@
             "title": "Power OFF Card main slot",
             "moduleID": 2,
             "messageType": 1,
-            "messageID": 1,
+            "messageID": 3,
             "command": "power_off_card",
             "data":
             {
@@ -38,7 +38,7 @@
             "title": "Transmit Apdu (get version from example)",
             "moduleID": 2,
             "messageType": 1,
-            "messageID": 1,
+            "messageID": 4,
             "command": "transmit_apdu",
             "data":
             {

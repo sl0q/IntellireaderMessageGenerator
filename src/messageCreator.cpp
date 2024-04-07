@@ -46,11 +46,8 @@ google::protobuf::Message *MessageCreator::find_protobuf_module(uint8_t moduleID
         return new ContactLevel1();
         //     return new ContactLevel1();
 
-        // case 3:
-        //     return new ContactLevel2();
-
-        // case 3:
-        //     return new ContactlessLeve1();
+    case 3:
+        return new ContactlessLevel1();
 
         // case 4:
         //     return new ContactlessLeve2();
@@ -189,6 +186,23 @@ void MessageCreator::generate_messages(const std::string inputFilePath, const st
                 payload = &generate_power_off(data);
             else if ("transmit_apdu" == command)
                 payload = &generate_transmit_apdu(data);
+            break;
+        }
+        case 3: //  ContactlessLevel1
+        {
+            if ("poll_for_token" == command)
+                payload = &generate_poll_for_token(data);
+            else if ("emv_removal" == command)
+                payload = &generate_emv_removal(data);
+            else if ("tsv_bit_array" == command)
+                payload = &generate_tsv_bit_array(data);
+            else if ("iso14443_4_command" == command)
+                payload = &generate_iso14443_4_command(data);
+            else if ("power_off_field" == command)
+                payload = &generate_power_off_field(data);
+            else if ("request_for_ats" == command)
+                payload = &generate_request_for_ats(data);
+            break;
         }
         default:
             break;
@@ -550,6 +564,164 @@ Payload &MessageCreator::generate_transmit_apdu(json data)
     if (data.count("commandApdu") == 0)
         throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:commandApdu] field in [" + this->inputFilePath + "] file.");
     transmitApdu->set_command_apdu(data.at("commandApdu").get<std::string>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_poll_for_token(json data)
+{
+    auto pollForToken = new contactless::poll::PollForToken();
+
+    dynamic_cast<ContactlessLevel1 *>(this->msg)->set_allocated_poll_for_token(pollForToken);
+
+    if (data.count("timeout") != 0)
+        pollForToken->set_timeout(data.at("timeout").get<uint32_t>());
+    if (data.count("preferMifare") != 0)
+        pollForToken->set_prefer_mifare(data.at("preferMifare").get<bool>());
+    if (data.count("pollStmSri512") != 0)
+        pollForToken->set_poll_stm_sri512(data.at("pollStmSri512").get<bool>());
+    if (data.count("pollingMode") != 0)
+    {
+        contactless::poll::PollingMode newPollingMode;
+        if (!contactless::poll::PollingMode_Parse(data.at("pollingMode").get<std::string>(), &newPollingMode))
+            throw std::invalid_argument("Failed to parse [pollingMode] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data::pollingMode].");
+        pollForToken->set_polling_mode(newPollingMode);
+    }
+    if (data.count("enableEcp") != 0)
+    {
+        contactless::poll::AppleEcp newAppleEcp;
+        if (!contactless::poll::AppleEcp_Parse(data.at("enableEcp").get<std::string>(), &newAppleEcp))
+            throw std::invalid_argument("Failed to parse [enableEcp] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data::enableEcp].");
+        pollForToken->set_enable_ecp(newAppleEcp);
+    }
+    if (data.count("lightUpLed") != 0)
+        pollForToken->set_light_up_led(data.at("lightUpLed").get<bool>());
+    if (data.count("pollIso15693") != 0)
+        pollForToken->set_poll_iso15693(data.at("pollIso15693").get<bool>());
+    if (data.count("pollAskCts") != 0)
+        pollForToken->set_poll_ask_cts(data.at("pollAskCts").get<bool>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_emv_removal(json data)
+{
+    auto emvRemoval = new contactless::emv_removal::EmvRemoval();
+
+    dynamic_cast<ContactlessLevel1 *>(this->msg)->set_allocated_emv_removal(emvRemoval);
+    if (data.count("timeout") != 0)
+        emvRemoval->set_timeout(data.at("timeout").get<uint32_t>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_tsv_bit_array(json data)
+{
+    auto tsvBitArr = new contactless::transceive::TransceiveBitArray();
+
+    dynamic_cast<ContactlessLevel1 *>(this->msg)->set_allocated_tsv_bit_array(tsvBitArr);
+
+    if (data.count("bitArray") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:bitArray] field in [" + this->inputFilePath + "] file.");
+    if (data["bitArray"].count("data") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:bitArray:data] field in [" + this->inputFilePath + "] file.");
+    if (data["bitArray"].count("count") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:bitArray:count] field in [" + this->inputFilePath + "] file.");
+    if (data.count("responseTimeoutUs") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:responseTimeoutUs] field in [" + this->inputFilePath + "] file.");
+
+    auto bitArray = new contactless::transceive::BitArray();
+    bitArray->set_data(data["bitArray"].at("data").get<std::string>());
+    bitArray->set_count(data["bitArray"].at("count").get<uint32_t>());
+    tsvBitArr->set_allocated_bit_array(bitArray);
+
+    tsvBitArr->set_response_timeout_us(data.at("responseTimeoutUs").get<uint32_t>());
+    if (data.count("tx_crc") != 0)
+        tsvBitArr->set_tx_crc(data.at("tx_crc").get<bool>());
+    if (data.count("rx_crc") != 0)
+        tsvBitArr->set_rx_crc(data.at("rx_crc").get<bool>());
+    if (data.count("parity") != 0)
+        tsvBitArr->set_parity(data.at("parity").get<bool>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_iso14443_4_command(json data)
+{
+    auto isoCommand = new contactless::iso14443_4::Command();
+
+    dynamic_cast<ContactlessLevel1 *>(this->msg)->set_allocated_iso14443_4_command(isoCommand);
+
+    if (data.count("data") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:data] field in [" + this->inputFilePath + "] file.");
+
+    isoCommand->set_data(data.at("data").get<std::string>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_power_off_field(json data)
+{
+    auto powerOffField = new contactless::rf_field::PowerOffField();
+
+    dynamic_cast<ContactlessLevel1 *>(this->msg)->set_allocated_power_off_field(powerOffField);
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_request_for_ats(json data)
+{
+    auto rats = new contactless::iso14443_4a::RequestForAnswerToSelect();
+
+    dynamic_cast<ContactlessLevel1 *>(this->msg)->set_allocated_request_for_ats(rats);
 
     std::cout << this->msg->DebugString() << std::endl;
 
