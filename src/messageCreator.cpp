@@ -43,14 +43,17 @@ google::protobuf::Message *MessageCreator::find_protobuf_module(uint8_t moduleID
 
     case 2:
         // ContactLevel2 не описан в документации
+        this->messageTypeStr = "ContactLevel1";
         return new ContactLevel1();
         //     return new ContactLevel1();
 
     case 3:
+        this->messageTypeStr = "ContactlessLevel1";
         return new ContactlessLevel1();
 
-        // case 4:
-        //     return new ContactlessLeve2();
+    case 4:
+        this->messageTypeStr = "ContactlessLevel2";
+        return new ContactlessLevel2();
 
         // case 5:
         //     return new Mifare();
@@ -58,8 +61,8 @@ google::protobuf::Message *MessageCreator::find_protobuf_module(uint8_t moduleID
         // case 6:
         //     return new PinPad();
 
-        // case 7:
-        //     return new Service();
+    case 7:
+        return new Service();
 
         // case 8:
         //     return new StmCard();
@@ -204,6 +207,32 @@ void MessageCreator::generate_messages(const std::string inputFilePath, const st
                 payload = &generate_request_for_ats(data);
             break;
         }
+        case 4:
+        {
+            if ("perform_transaction")
+                payload = &generate_perform_transaction(data);
+            break;
+        }
+        case 7:
+        {
+            if ("prepare_update" == command)
+                payload = &generate_prepare_update(data);
+            else if ("update_block" == command)
+                payload = &generate_update_block(data);
+            else if ("apply_update" == command)
+                payload = &generate_apply_update(data);
+            else if ("rollback_update" == command)
+                payload = &generate_rollback_update(data);
+            else if ("get_diagnostic" == command)
+                payload = &generate_get_diagnostic(data);
+            else if ("prepare_for_config" == command)
+                payload = &generate_prepare_for_config(data);
+            else if ("upload_block_of_config" == command)
+                payload = &generate_upload_block_of_config(data);
+            else if ("check_configuration" == command)
+                payload = &generate_check_configuration(data);
+            break;
+        }
         default:
             break;
         }
@@ -248,7 +277,7 @@ const Msg &MessageCreator::compose_message(Payload &generatedPayload, bool isChe
     return *(new Msg(generatedPayload.getDebugString(), buf));
 }
 
-Payload &MessageCreator::generate_set_leds_state(json data)
+Payload &MessageCreator::generate_set_leds_state(json &data)
 {
     std::vector<uint8_t> buf;
     misc::leds::Leds *leds = new misc::leds::Leds();
@@ -276,7 +305,7 @@ Payload &MessageCreator::generate_set_leds_state(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_reboot_device(json data)
+Payload &MessageCreator::generate_reboot_device(json &data)
 {
     std::vector<uint8_t> buf;
 
@@ -302,7 +331,7 @@ Payload &MessageCreator::generate_reboot_device(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_read_device_info(json data)
+Payload &MessageCreator::generate_read_device_info(json &data)
 {
     std::vector<uint8_t> buf;
 
@@ -320,7 +349,7 @@ Payload &MessageCreator::generate_read_device_info(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_make_sound(json data)
+Payload &MessageCreator::generate_make_sound(json &data)
 {
     std::vector<uint8_t> buf;
 
@@ -358,7 +387,7 @@ Payload &MessageCreator::generate_make_sound(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_get_echo(json data)
+Payload &MessageCreator::generate_get_echo(json &data)
 {
     std::vector<uint8_t> buf;
 
@@ -383,7 +412,7 @@ Payload &MessageCreator::generate_get_echo(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_get_device_status(json data)
+Payload &MessageCreator::generate_get_device_status(json &data)
 {
     std::vector<uint8_t> buf;
 
@@ -401,7 +430,7 @@ Payload &MessageCreator::generate_get_device_status(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_get_device_statistic(json data)
+Payload &MessageCreator::generate_get_device_statistic(json &data)
 {
     std::vector<uint8_t> buf;
 
@@ -419,7 +448,7 @@ Payload &MessageCreator::generate_get_device_statistic(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_change_lan_settings(json data)
+Payload &MessageCreator::generate_change_lan_settings(json &data)
 {
     std::vector<uint8_t> buf;
 
@@ -472,7 +501,7 @@ Payload &MessageCreator::generate_change_lan_settings(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_change_baudrate(json data)
+Payload &MessageCreator::generate_change_baudrate(json &data)
 {
     std::vector<uint8_t> buf;
 
@@ -498,7 +527,7 @@ Payload &MessageCreator::generate_change_baudrate(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_power_on(json data)
+Payload &MessageCreator::generate_power_on(json &data)
 {
     auto powerOnCard = new contact::power_on::PowerOnCard();
 
@@ -523,7 +552,7 @@ Payload &MessageCreator::generate_power_on(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_power_off(json data)
+Payload &MessageCreator::generate_power_off(json &data)
 {
     auto powerOffCard = new contact::power_off::PowerOffCard();
 
@@ -548,7 +577,7 @@ Payload &MessageCreator::generate_power_off(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_transmit_apdu(json data)
+Payload &MessageCreator::generate_transmit_apdu(json &data)
 {
     auto transmitApdu = new contact::iso7816_4::TransmitApdu();
 
@@ -576,7 +605,7 @@ Payload &MessageCreator::generate_transmit_apdu(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_poll_for_token(json data)
+Payload &MessageCreator::generate_poll_for_token(json &data)
 {
     auto pollForToken = new contactless::poll::PollForToken();
 
@@ -620,7 +649,7 @@ Payload &MessageCreator::generate_poll_for_token(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_emv_removal(json data)
+Payload &MessageCreator::generate_emv_removal(json &data)
 {
     auto emvRemoval = new contactless::emv_removal::EmvRemoval();
 
@@ -639,7 +668,7 @@ Payload &MessageCreator::generate_emv_removal(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_tsv_bit_array(json data)
+Payload &MessageCreator::generate_tsv_bit_array(json &data)
 {
     auto tsvBitArr = new contactless::transceive::TransceiveBitArray();
 
@@ -678,7 +707,7 @@ Payload &MessageCreator::generate_tsv_bit_array(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_iso14443_4_command(json data)
+Payload &MessageCreator::generate_iso14443_4_command(json &data)
 {
     auto isoCommand = new contactless::iso14443_4::Command();
 
@@ -700,7 +729,7 @@ Payload &MessageCreator::generate_iso14443_4_command(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_power_off_field(json data)
+Payload &MessageCreator::generate_power_off_field(json &data)
 {
     auto powerOffField = new contactless::rf_field::PowerOffField();
 
@@ -717,11 +746,237 @@ Payload &MessageCreator::generate_power_off_field(json data)
     return generatedPayload;
 }
 
-Payload &MessageCreator::generate_request_for_ats(json data)
+Payload &MessageCreator::generate_request_for_ats(json &data)
 {
     auto rats = new contactless::iso14443_4a::RequestForAnswerToSelect();
 
     dynamic_cast<ContactlessLevel1 *>(this->msg)->set_allocated_request_for_ats(rats);
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_perform_transaction(json &data)
+{
+    if (data.count("pollForToken") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:pollForToken] field in [" + this->inputFilePath + "] file.");
+    if (data.count("amountAuthorized") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:amountAuthorized] field in [" + this->inputFilePath + "] file.");
+    if (data.count("transactionDate") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:transactionDate] field in [" + this->inputFilePath + "] file.");
+    if (data.count("transactionType") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:transactionType] field in [" + this->inputFilePath + "] file.");
+    if (data.count("terminalCountryCode") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:terminalCountryCode] field in [" + this->inputFilePath + "] file.");
+    if (data.count("transactionTime") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:transactionTime] field in [" + this->inputFilePath + "] file.");
+    if (data.count("transactionCurrencyCode") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:transactionCurrencyCode] field in [" + this->inputFilePath + "] file.");
+
+    auto performTransaction = new contactless::transaction::PerformTransaction();
+
+    dynamic_cast<ContactlessLevel2 *>(this->msg)->set_allocated_perform_transaction(performTransaction);
+
+    auto pollForToken = new contactless::poll::PollForToken();
+    auto tempMessagePointer = this->msg;
+    this->msg = find_protobuf_module(3);
+    auto pollForTokenPayload = generate_poll_for_token(data["pollForToken"]);
+    delete this->msg;
+    this->msg = tempMessagePointer;
+    pollForToken->ParseFromArray(pollForTokenPayload.getData().data(), pollForTokenPayload.getData().size());
+    performTransaction->set_allocated_poll_for_token(pollForToken);
+
+    performTransaction->set_amount_authorized(data.at("amountAuthorized").get<uint64_t>());
+    performTransaction->set_transaction_date(data.at("transactionDate").get<std::string>());
+    performTransaction->set_transaction_time(data.at("transactionType").get<std::string>());
+    performTransaction->set_terminal_country_code(data.at("terminalCountryCode").get<std::string>());
+    performTransaction->set_transaction_time(data.at("transactionTime").get<std::string>());
+    performTransaction->set_transaction_currency_code(data.at("transactionCurrencyCode").get<std::string>());
+
+    if (data.count("mastercardAmount") != 0)
+        performTransaction->set_mastercard_amount(data.at("mastercardAmount").get<uint64_t>());
+    if (data.count("maestroAmount") != 0)
+        performTransaction->set_maestro_amount(data.at("maestroAmount").get<uint64_t>());
+    if (data.count("mirAmount") != 0)
+        performTransaction->set_mir_amount(data.at("mirAmount").get<uint64_t>());
+    if (data.count("troikaAmount") != 0)
+        performTransaction->set_troika_amount(data.at("troikaAmount").get<uint64_t>());
+    if (data.count("unionpayAmount") != 0)
+        performTransaction->set_unionpay_amount(data.at("unionpayAmount").get<uint64_t>());
+    if (data.count("merchantNameAndLocation") != 0)
+        performTransaction->set_merchant_name_and_location(data.at("merchantNameAndLocation").get<std::string>());
+    if (data.count("merchantCategoryCode") != 0)
+        performTransaction->set_merchant_category_code(data.at("merchantCategoryCode").get<std::string>());
+    if (data.count("terminalIdentification") != 0)
+        performTransaction->set_terminal_identification(data.at("terminalIdentification").get<std::string>());
+    if (data.count("debug") != 0)
+        performTransaction->set_debug(data.at("debug").get<bool>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_prepare_update(json &data)
+{
+    if (data.count("firmwareImageSize") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:firmwareImageSize] field in [" + this->inputFilePath + "] file.");
+
+    auto prepareUpdate = new srv::firmware_update::Prepare();
+
+    dynamic_cast<Service *>(this->msg)->set_allocated_prepare_update(prepareUpdate);
+
+    prepareUpdate->set_firmware_image_size(data.at("firmwareImageSize").get<uint32_t>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_update_block(json &data)
+{
+    if (data.count("data") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:data] field in [" + this->inputFilePath + "] file.");
+
+    auto updateBlock = new srv::firmware_update::UpdateBlock();
+
+    dynamic_cast<Service *>(this->msg)->set_allocated_update_block(updateBlock);
+
+    updateBlock->set_data(data.at("data").get<std::string>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_apply_update(json &data)
+{
+    auto applyUpdate = new srv::firmware_update::Apply();
+
+    dynamic_cast<Service *>(this->msg)->set_allocated_apply_update(applyUpdate);
+
+    if (data.count("restart") != 0)
+        applyUpdate->set_restart(data.at("restart").get<bool>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_rollback_update(json &data)
+{
+    auto rollBack = new srv::firmware_update::Rollback();
+
+    dynamic_cast<Service *>(this->msg)->set_allocated_rollback_update(rollBack);
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_get_diagnostic(json &data)
+{
+    auto getDiagnostic = new srv::diagnostic::GetDiagnostic();
+
+    dynamic_cast<Service *>(this->msg)->set_allocated_get_diagnostic(getDiagnostic);
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_prepare_for_config(json &data)
+{
+    if (data.count("configSize") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:configSize] field in [" + this->inputFilePath + "] file.");
+
+    auto prepareConfig = new srv::upload_config::Prepare();
+
+    dynamic_cast<Service *>(this->msg)->set_allocated_prepare_for_config(prepareConfig);
+
+    prepareConfig->set_config_size(data.at("configSize").get<uint32_t>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_upload_block_of_config(json &data)
+{
+    if (data.count("data") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:data] field in [" + this->inputFilePath + "] file.");
+
+    auto configBlock = new srv::upload_config::UploadBlock();
+
+    dynamic_cast<Service *>(this->msg)->set_allocated_upload_block_of_config(configBlock);
+
+    configBlock->set_data(data.at("data").get<std::string>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_check_configuration(json &data)
+{
+    auto checkConfig = new srv::upload_config::CheckConfiguration();
+
+    dynamic_cast<Service *>(this->msg)->set_allocated_check_configuration(checkConfig);
 
     std::cout << this->msg->DebugString() << std::endl;
 

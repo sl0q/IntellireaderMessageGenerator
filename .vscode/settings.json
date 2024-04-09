@@ -4,5 +4,8 @@
         "editor.tabSize": 4,
         "editor.formatOnSave": true
     },
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "files.associations": {
+        "compare": "cpp"
+    }
 }

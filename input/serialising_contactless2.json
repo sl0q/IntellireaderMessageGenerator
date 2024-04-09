@@ -1,0 +1,32 @@
+{
+    "messages":
+    [
+        {   
+            "title": "Perform transaktion with contactless card (level2)",
+            "moduleID": 4,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "perform_transaction",
+            "data":
+            {
+                "pollForToken":
+                {
+                    "timeout": 1000,
+                    "pollingMode": "CONTINOUS_POLLING",
+                    "lightUpLed": true
+                },
+                "amountAuthorized": 1000,
+                "transactionDate": "\\x13\\x06\\x13",
+                "transactionTime": "\\x12\\x00\\x00",
+                "transactionType": "\\x00",
+                "terminalCountryCode": "\\x06\\x43",
+                "transactionCurrencyCode": "\\x06\\x43",
+                "mastercardAmount": 500,
+                "merchantNameAndLocation": "Belethor's General Goods, Whiterun",
+                "merchantCategoryCode": "\\x53\\x99",
+                "terminalIdentification": "bytesbytes",
+                "debug": false
+            }
+        }
+    ]
+}

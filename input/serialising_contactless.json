@@ -11,7 +11,7 @@
             {
                 "timeout": 1000,
                 "pollingMode": "CONTINOUS_POLLING",
-                "light_up_led": true
+                "lightUpLed": true
             }
         },
         {   

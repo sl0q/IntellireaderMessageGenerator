@@ -1,0 +1,81 @@
+{
+    "messages":
+    [
+        {   
+            "title": "Prepare firmware update",
+            "moduleID": 7,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "prepare_update",
+            "data":
+            {
+                "firmwareImageSize": 25423
+            }
+        },
+        {   
+            "title": "Update block of firmware image",
+            "moduleID": 7,
+            "messageType": 1,
+            "messageID": 2,
+            "command": "update_block",
+            "data":
+            {
+                "data": "block with update data bytes"
+            }
+        },
+        {   
+            "title": "Finalize firmware update",
+            "moduleID": 7,
+            "messageType": 1,
+            "messageID": 3,
+            "command": "apply_update",
+            "data":
+            {
+                "restart": true
+            }
+        },
+        {   
+            "title": "Rollback firmware update",
+            "moduleID": 7,
+            "messageType": 1,
+            "messageID": 4,
+            "command": "rollback_update"
+        },
+        {   
+            "title": "Get diagnostic information",
+            "moduleID": 7,
+            "messageType": 1,
+            "messageID": 5,
+            "command": "get_diagnostic"
+        },
+        {   
+            "title": "Prepare device to upload configuration",
+            "moduleID": 7,
+            "messageType": 1,
+            "messageID": 6,
+            "command": "prepare_for_config",
+            "data":
+            {
+                "configSize": 223542
+            }
+        },
+        {   
+            "title": "Upload block of configuration",
+            "moduleID": 7,
+            "messageType": 1,
+            "messageID": 7,
+            "command": "upload_block_of_config",
+            "data":
+            {
+                "data": "block with config data bytesbytes"
+            }
+        },
+        {   
+            "title": "Check uploaded configuration",
+            "moduleID": 7,
+            "messageType": 1,
+            "messageID": 8,
+            "command": "check_configuration"
+        }
+    ]
+}

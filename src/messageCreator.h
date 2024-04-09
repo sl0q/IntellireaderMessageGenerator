@@ -11,7 +11,8 @@
 
 // #include "../proto_src/intellireader/commands2.pb.h"
 // #include "../proto_src/intellireader/commands3.pb.h"
-#include "../proto_src/intellireader/commands4.pb.h"
+// #include "../proto_src/intellireader/commands4.pb.h"
+#include "../proto_src/intellireader/commands5.pb.h"
 
 #include "../proto_src/intellireader/misc/leds.pb.h"
 #include "../proto_src/intellireader/misc/reboot.pb.h"
@@ -33,6 +34,12 @@
 #include "../proto_src/intellireader/contactless/iso14443_4.pb.h"
 #include "../proto_src/intellireader/contactless/rf_field.pb.h"
 #include "../proto_src/intellireader/contactless/iso14443_4a.pb.h"
+
+#include "../proto_src/intellireader/contactless/transaction.pb.h"
+
+#include "../proto_src/intellireader/srv/firmware_update.pb.h"
+#include "../proto_src/intellireader/srv/diagnostic.pb.h"
+#include "../proto_src/intellireader/srv/upload_config.pb.h"
 
 #include "nlohmann/json.hpp"
 
@@ -63,28 +70,41 @@ private:
     const Msg &compose_message(Payload &generatedPayload, bool isChecksumValid);
 
     // Miscellaneous
-    Payload &generate_set_leds_state(json data);
-    Payload &generate_reboot_device(json data);
-    Payload &generate_read_device_info(json data);
-    Payload &generate_make_sound(json data);
-    Payload &generate_get_echo(json data);
-    Payload &generate_get_device_status(json data);
-    Payload &generate_get_device_statistic(json data);
-    Payload &generate_change_lan_settings(json data);
-    Payload &generate_change_baudrate(json data);
+    Payload &generate_set_leds_state(json &data);
+    Payload &generate_reboot_device(json &data);
+    Payload &generate_read_device_info(json &data);
+    Payload &generate_make_sound(json &data);
+    Payload &generate_get_echo(json &data);
+    Payload &generate_get_device_status(json &data);
+    Payload &generate_get_device_statistic(json &data);
+    Payload &generate_change_lan_settings(json &data);
+    Payload &generate_change_baudrate(json &data);
 
     // ContactLevel1
-    Payload &generate_power_on(json data);
-    Payload &generate_power_off(json data);
-    Payload &generate_transmit_apdu(json data);
+    Payload &generate_power_on(json &data);
+    Payload &generate_power_off(json &data);
+    Payload &generate_transmit_apdu(json &data);
 
-    // ContactLevel2
-    Payload &generate_poll_for_token(json data);
-    Payload &generate_emv_removal(json data);
-    Payload &generate_tsv_bit_array(json data);
-    Payload &generate_iso14443_4_command(json data);
-    Payload &generate_power_off_field(json data);
-    Payload &generate_request_for_ats(json data);
+    // ContactlessLevel1
+    Payload &generate_poll_for_token(json &data);
+    Payload &generate_emv_removal(json &data);
+    Payload &generate_tsv_bit_array(json &data);
+    Payload &generate_iso14443_4_command(json &data);
+    Payload &generate_power_off_field(json &data);
+    Payload &generate_request_for_ats(json &data);
+
+    // ContactlessLevel2
+    Payload &generate_perform_transaction(json &data);
+
+    // Service
+    Payload &generate_prepare_update(json &data);
+    Payload &generate_update_block(json &data);
+    Payload &generate_apply_update(json &data);
+    Payload &generate_rollback_update(json &data);
+    Payload &generate_get_diagnostic(json &data);
+    Payload &generate_prepare_for_config(json &data);
+    Payload &generate_upload_block_of_config(json &data);
+    Payload &generate_check_configuration(json &data);
 
 public:
     MessageCreator(std::string inputJsonPath);
