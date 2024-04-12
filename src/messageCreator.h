@@ -115,6 +115,9 @@ private:
 
     // GUI
     void parse_widget(json &widgetJson, gui::widget::Widget &widget);
+    void parse_background(json &backgroundJson, gui::background::Background &background);
+    void parse_foreground(json &foregroundJson, gui::foreground::Foreground &foreground);
+    void parse_border(json &borderJson, gui::border::Border &border);
 
     Payload &generate_show_screen(json &data);
     // Payload &generate_input_dialog(json &data);

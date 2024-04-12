@@ -1008,11 +1008,6 @@ Payload &MessageCreator::generate_check_configuration(json &data)
 
 void MessageCreator::parse_widget(json &widgetJson, gui::widget::Widget &widget)
 {
-    // void *widgetType;
-    // void *widgetType = new gui::widget::VerticalLayout();
-    // auto *widgetType = new gui::widget::HorizontalLayout();
-    // auto *widgetType = new gui::widget::Text();
-    // auto *widgetType = new gui::widget::Picture();
     if (widgetJson.count("verticalLayout") != 0)
     {
         auto widgetType = new gui::widget::VerticalLayout();
@@ -1060,38 +1055,16 @@ void MessageCreator::parse_widget(json &widgetJson, gui::widget::Widget &widget)
 
         if (widgetJson["text"].count("background") != 0)
         {
-            auto newBackground = new gui::background::Background(); // probably pointer needed
+            auto newBackground = new gui::background::Background();
+            parse_background(widgetJson["text"]["background"], *newBackground);
             widgetType->set_allocated_background(newBackground);
-
-            if (widgetJson["text"]["background"].count("solidFill") != 0)
-            {
-                gui::solidfill::SolidFill newSolidFill;
-                if (!gui::solidfill::SolidFill_Parse(widgetJson["text"]["background"].at("solidFill").get<std::string>(), &newSolidFill))
-                    throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:background:solidFill].");
-                newBackground->set_solid_fill(newSolidFill);
-            }
-            else if (widgetJson["text"]["background"].count("solidFillRGB") != 0)
-                newBackground->set_solid_fill_rgb(widgetJson["text"]["background"].at("solidFillRGB").get<uint32_t>());
-            else
-                throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:background:???] field in [" + this->inputFilePath + "] file.");
         }
 
         if (widgetJson["text"].count("foreground") != 0)
         {
-            auto newForeground = new gui::foreground::Foreground; // probably pointer needed
+            auto newForeground = new gui::foreground::Foreground;
+            parse_foreground(widgetJson["text"]["foreground"], *newForeground);
             widgetType->set_allocated_foreground(newForeground);
-
-            if (widgetJson["text"]["foreground"].count("solidFill") != 0)
-            {
-                gui::solidfill::SolidFill newSolidFill;
-                if (!gui::solidfill::SolidFill_Parse(widgetJson["text"]["foreground"].at("solidFill").get<std::string>(), &newSolidFill))
-                    throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:foreground:solidFill].");
-                newForeground->set_solid_fill(newSolidFill);
-            }
-            else if (widgetJson["text"]["foreground"].count("solidFillRGB") != 0)
-                newForeground->set_solid_fill_rgb(widgetJson["text"]["foreground"].at("solidFillRGB").get<uint32_t>());
-            else
-                throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:foreground:???] field in [" + this->inputFilePath + "] file.");
         }
 
         if (widgetJson["text"].count("font") != 0)
@@ -1105,34 +1078,11 @@ void MessageCreator::parse_widget(json &widgetJson, gui::widget::Widget &widget)
         if (widgetJson["text"].count("buttonID") != 0)
             widgetType->set_button_id(widgetJson["text"].at("buttonID").get<uint32_t>());
 
-        auto newBorder = new gui::border::Border(); // probably pointer needed
-        widgetType->set_allocated_border(newBorder);
         if (widgetJson["text"].count("border"))
         {
-
-            if (widgetJson["text"]["border"].count("style") == 0)
-                throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:border:style] field in [" + this->inputFilePath + "] file.");
-
-            gui::border::BorderStyle newBorderStyle;
-            if (!gui::border::BorderStyle_Parse(widgetJson["text"]["border"].at("style").get<std::string>(), &newBorderStyle))
-                throw std::invalid_argument("Failed to parse [style] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:border:style].");
-            newBorder->set_style(newBorderStyle);
-            if (widgetJson["text"]["border"].count("color") != 0)
-            {
-                gui::background::Background newColor;
-                if (widgetJson["text"]["border"]["color"].count("solidFill") != 0)
-                {
-                    gui::solidfill::SolidFill newSolidFill;
-                    if (!gui::solidfill::SolidFill_Parse(widgetJson["text"]["border"]["color"].at("solidFill").get<std::string>(), &newSolidFill))
-                        throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:border:color:solidFill].");
-                    newColor.set_solid_fill(newSolidFill);
-                }
-                else if (widgetJson["text"]["border"]["color"].count("solidFillRGB") != 0)
-                    newColor.set_solid_fill_rgb(widgetJson["text"]["border"]["color"].at("solidFillRGB").get<uint32_t>());
-                else
-                    throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:border:color:???] field in [" + this->inputFilePath + "] file.");
-                newBorder->set_allocated_color(&newColor);
-            }
+            auto newBorder = new gui::border::Border();
+            parse_border(widgetJson["text"]["border"], *newBorder);
+            widgetType->set_allocated_border(newBorder);
         }
     }
     else if (widgetJson.count("picture") != 0)
@@ -1141,8 +1091,6 @@ void MessageCreator::parse_widget(json &widgetJson, gui::widget::Widget &widget)
 
         if (widgetJson["picture"].count("pictureID") == 0)
             throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:root:::picture:pictureID] field in [" + this->inputFilePath + "] file.");
-
-        // auto newPicture = new gui::widget::Picture(); // probably pointer needed
 
         gui::picture_id::PictureId newPictureID;
         if (!gui::picture_id::PictureId_Parse(widgetJson["picture"].at("pictureID").get<std::string>(), &newPictureID))
@@ -1167,18 +1115,8 @@ void MessageCreator::parse_widget(json &widgetJson, gui::widget::Widget &widget)
 
         if (widgetJson["picture"].count("background") != 0)
         {
-            auto newBackground = new gui::background::Background(); // probably pointer needed
-            if (widgetJson["picture"]["background"].count("solidFill") != 0)
-            {
-                gui::solidfill::SolidFill newSolidFill;
-                if (!gui::solidfill::SolidFill_Parse(widgetJson["picture"]["background"].at("solidFill").get<std::string>(), &newSolidFill))
-                    throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::picture:background:solidFill].");
-                newBackground->set_solid_fill(newSolidFill);
-            }
-            else if (widgetJson["picture"]["background"].count("solidFillRGB") != 0)
-                newBackground->set_solid_fill_rgb(widgetJson["picture"]["background"].at("solidFillRGB").get<uint32_t>());
-            else
-                throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:::picture:background:???] field in [" + this->inputFilePath + "] file.");
+            auto newBackground = new gui::background::Background();
+            parse_background(widgetJson["picture"]["background"], *newBackground);
             widgetType->set_allocated_background(newBackground);
         }
 
@@ -1193,8 +1131,6 @@ void MessageCreator::parse_widget(json &widgetJson, gui::widget::Widget &widget)
 
         if (widgetJson["QrCode"].count("text") == 0)
             throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:root:::QrCode:text] field in [" + this->inputFilePath + "] file.");
-
-        // auto newQrCode = new gui::widget::QrCode(); // pointer?
 
         widgetType->set_text(widgetJson["QrCode"].at("text").get<std::string>());
 
@@ -1248,19 +1184,9 @@ void MessageCreator::parse_widget(json &widgetJson, gui::widget::Widget &widget)
 
         if (widgetJson["customerPicture"].count("background") != 0)
         {
-            gui::background::Background newBackground; // probably pointer needed
-            if (widgetJson["customerPicture"]["background"].count("solidFill") != 0)
-            {
-                gui::solidfill::SolidFill newSolidFill;
-                if (!gui::solidfill::SolidFill_Parse(widgetJson["customerPicture"]["background"].at("solidFill").get<std::string>(), &newSolidFill))
-                    throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::customerPicture:background:solidFill].");
-                newBackground.set_solid_fill(newSolidFill);
-            }
-            else if (widgetJson["customerPicture"]["background"].count("solidFillRGB") != 0)
-                newBackground.set_solid_fill_rgb(widgetJson["customerPicture"]["background"].at("solidFillRGB").get<uint32_t>());
-            else
-                throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:::customerPicture:background:???] field in [" + this->inputFilePath + "] file.");
-            widgetType->set_allocated_background(&newBackground);
+            auto newBackground = new gui::background::Background();
+            parse_background(widgetJson["picture"]["background"], *newBackground);
+            widgetType->set_allocated_background(newBackground);
         }
 
         if (widgetJson["customerPicture"].count("buttonID") != 0)
@@ -1274,8 +1200,6 @@ void MessageCreator::parse_widget(json &widgetJson, gui::widget::Widget &widget)
 
         if (widgetJson["generatedText"].count("textID") == 0)
             throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:root:::generatedText:textID] field in [" + this->inputFilePath + "] file.");
-
-        // gui::widget::GeneratedText newGeneratedText; // pointer?
 
         gui::text_id::TextId newTextId;
         if (!gui::text_id::TextId_Parse(widgetJson["generatedText"].at("textID").get<std::string>(), &newTextId))
@@ -1300,36 +1224,16 @@ void MessageCreator::parse_widget(json &widgetJson, gui::widget::Widget &widget)
 
         if (widgetJson["generatedText"].count("background") != 0)
         {
-            gui::background::Background newBackground; // probably pointer needed
-            if (widgetJson["generatedText"]["background"].count("solidFill") != 0)
-            {
-                gui::solidfill::SolidFill newSolidFill;
-                if (!gui::solidfill::SolidFill_Parse(widgetJson["generatedText"]["background"].at("solidFill").get<std::string>(), &newSolidFill))
-                    throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::generatedText:background:solidFill].");
-                newBackground.set_solid_fill(newSolidFill);
-            }
-            else if (widgetJson["generatedText"]["background"].count("solidFillRGB") != 0)
-                newBackground.set_solid_fill_rgb(widgetJson["generatedText"]["background"].at("solidFillRGB").get<uint32_t>());
-            else
-                throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:::generatedText:background:???] field in [" + this->inputFilePath + "] file.");
-            widgetType->set_allocated_background(&newBackground);
+            auto newBackground = new gui::background::Background();
+            parse_background(widgetJson["generatedText"]["background"], *newBackground);
+            widgetType->set_allocated_background(newBackground);
         }
 
         if (widgetJson["generatedText"].count("foreground") != 0)
         {
-            gui::foreground::Foreground newForeground; // probably pointer needed
-            if (widgetJson["generatedText"]["foreground"].count("solidFill") != 0)
-            {
-                gui::solidfill::SolidFill newSolidFill;
-                if (!gui::solidfill::SolidFill_Parse(widgetJson["generatedText"]["foreground"].at("solidFill").get<std::string>(), &newSolidFill))
-                    throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::generatedText:foreground:solidFill].");
-                newForeground.set_solid_fill(newSolidFill);
-            }
-            else if (widgetJson["generatedText"]["foreground"].count("solidFillRGB") != 0)
-                newForeground.set_solid_fill_rgb(widgetJson["generatedText"]["foreground"].at("solidFillRGB").get<uint32_t>());
-            else
-                throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:::generatedText:foreground:???] field in [" + this->inputFilePath + "] file.");
-            widgetType->set_allocated_foreground(&newForeground);
+            auto newForeground = new gui::foreground::Foreground();
+            parse_foreground(widgetJson["text"]["foreground"], *newForeground);
+            widgetType->set_allocated_foreground(newForeground);
         }
 
         if (widgetJson["generatedText"].count("font") != 0)
@@ -1349,6 +1253,63 @@ void MessageCreator::parse_widget(json &widgetJson, gui::widget::Widget &widget)
         throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:???] field in [" + this->inputFilePath + "] file.");
 }
 
+void MessageCreator::parse_background(json &backgroundJson, gui::background::Background &background)
+{
+    if (backgroundJson.count("solidFill") != 0)
+    {
+        gui::solidfill::SolidFill newSolidFill;
+        if (!gui::solidfill::SolidFill_Parse(backgroundJson.at("solidFill").get<std::string>(), &newSolidFill))
+            throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:::background:solidFill].");
+        background.set_solid_fill(newSolidFill);
+    }
+    else if (backgroundJson.count("solidFillRGB") != 0)
+        background.set_solid_fill_rgb(backgroundJson.at("solidFillRGB").get<uint32_t>());
+    else
+        throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:::background:???] field in [" + this->inputFilePath + "] file.");
+}
+
+void MessageCreator::parse_foreground(json &foregroundJson, gui::foreground::Foreground &foreground)
+{
+    if (foregroundJson.count("solidFill") != 0)
+    {
+        gui::solidfill::SolidFill newSolidFill;
+        if (!gui::solidfill::SolidFill_Parse(foregroundJson.at("solidFill").get<std::string>(), &newSolidFill))
+            throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:::foreground:solidFill].");
+        foreground.set_solid_fill(newSolidFill);
+    }
+    else if (foregroundJson.count("solidFillRGB") != 0)
+        foreground.set_solid_fill_rgb(foregroundJson.at("solidFillRGB").get<uint32_t>());
+    else
+        throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:::foreground:???] field in [" + this->inputFilePath + "] file.");
+}
+
+void MessageCreator::parse_border(json &borderJson, gui::border::Border &border)
+{
+    if (borderJson.count("style") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:::border:style] field in [" + this->inputFilePath + "] file.");
+
+    gui::border::BorderStyle newBorderStyle;
+    if (!gui::border::BorderStyle_Parse(borderJson.at("style").get<std::string>(), &newBorderStyle))
+        throw std::invalid_argument("Failed to parse [style] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:::border:style].");
+    border.set_style(newBorderStyle);
+    if (borderJson.count("color") != 0)
+    {
+        auto newColor = new gui::background::Background();
+        if (borderJson["color"].count("solidFill") != 0)
+        {
+            gui::solidfill::SolidFill newSolidFill;
+            if (!gui::solidfill::SolidFill_Parse(borderJson["color"].at("solidFill").get<std::string>(), &newSolidFill))
+                throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:::border:color:solidFill].");
+            newColor->set_solid_fill(newSolidFill);
+        }
+        else if (borderJson["color"].count("solidFillRGB") != 0)
+            newColor->set_solid_fill_rgb(borderJson["color"].at("solidFillRGB").get<uint32_t>());
+        else
+            throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:::border:color:???] field in [" + this->inputFilePath + "] file.");
+        border.set_allocated_color(newColor);
+    }
+}
+
 Payload &MessageCreator::generate_show_screen(json &data)
 {
     if (data.count("root") == 0)
@@ -1364,65 +1325,22 @@ Payload &MessageCreator::generate_show_screen(json &data)
 
     if (data.count("background") != 0)
     {
-        auto newBackground = new gui::background::Background(); // probably pointer needed
-        if (data["background"].count("solidFill") != 0)
-        {
-            gui::solidfill::SolidFill newSolidFill;
-            if (!gui::solidfill::SolidFill_Parse(data["background"].at("solidFill").get<std::string>(), &newSolidFill))
-                throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:background:solidFill].");
-            newBackground->set_solid_fill(newSolidFill);
-        }
-        else if (data["background"].count("solidFillRGB") != 0)
-            newBackground->set_solid_fill_rgb(data["background"].at("solidFillRGB").get<uint32_t>());
-        else
-            throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:background:???] field in [" + this->inputFilePath + "] file.");
+        auto newBackground = new gui::background::Background();
+        parse_background(data["background"], *newBackground);
         showScreen->set_allocated_background(newBackground);
     }
 
     if (data.count("foreground") != 0)
     {
-        auto newForeground = new gui::foreground::Foreground(); // probably pointer needed
-        if (data["foreground"].count("solidFill") != 0)
-        {
-            gui::solidfill::SolidFill newSolidFill;
-            if (!gui::solidfill::SolidFill_Parse(data["foreground"].at("solidFill").get<std::string>(), &newSolidFill))
-                throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data::foreground:solidFill].");
-            newForeground->set_solid_fill(newSolidFill);
-        }
-        else if (data["foreground"].count("solidFillRGB") != 0)
-            newForeground->set_solid_fill_rgb(data["foreground"].at("solidFillRGB").get<uint32_t>());
-        else
-            throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data::foreground:???] field in [" + this->inputFilePath + "] file.");
+        auto newForeground = new gui::foreground::Foreground();
+        parse_foreground(data["foreground"], *newForeground);
         showScreen->set_allocated_foreground(newForeground);
     }
 
     if (data.count("border"))
     {
-        auto newBorder = new gui::border::Border(); // probably pointer needed
-
-        if (data["border"].count("style") == 0)
-            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:border:style] field in [" + this->inputFilePath + "] file.");
-
-        gui::border::BorderStyle newBorderStyle;
-        if (!gui::border::BorderStyle_Parse(data["border"].at("style").get<std::string>(), &newBorderStyle))
-            throw std::invalid_argument("Failed to parse [style] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:border:style].");
-        newBorder->set_style(newBorderStyle);
-        if (data["border"].count("color") != 0)
-        {
-            auto newColor = new gui::background::Background();
-            if (data["border"]["color"].count("solidFill") != 0)
-            {
-                gui::solidfill::SolidFill newSolidFill;
-                if (!gui::solidfill::SolidFill_Parse(data["border"]["color"].at("solidFill").get<std::string>(), &newSolidFill))
-                    throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:border:color:solidFill].");
-                newColor->set_solid_fill(newSolidFill);
-            }
-            else if (data["border"]["color"].count("solidFillRGB") != 0)
-                newColor->set_solid_fill_rgb(data["border"]["color"].at("solidFillRGB").get<uint32_t>());
-            else
-                throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:border:color:???] field in [" + this->inputFilePath + "] file.");
-            newBorder->set_allocated_color(newColor);
-        }
+        auto newBorder = new gui::border::Border();
+        parse_border(data["border"], *newBorder);
         showScreen->set_allocated_border(newBorder);
     }
 
