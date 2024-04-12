@@ -6,6 +6,7 @@
     },
     "cmake.configureOnOpen": false,
     "files.associations": {
-        "compare": "cpp"
+        "compare": "cpp",
+        "*.inc": "cpp"
     }
 }

@@ -12,7 +12,8 @@
 // #include "../proto_src/intellireader/commands2.pb.h"
 // #include "../proto_src/intellireader/commands3.pb.h"
 // #include "../proto_src/intellireader/commands4.pb.h"
-#include "../proto_src/intellireader/commands5.pb.h"
+// #include "../proto_src/intellireader/commands5.pb.h"
+#include "../proto_src/intellireader/commands6.pb.h"
 
 #include "../proto_src/intellireader/misc/leds.pb.h"
 #include "../proto_src/intellireader/misc/reboot.pb.h"
@@ -40,6 +41,12 @@
 #include "../proto_src/intellireader/srv/firmware_update.pb.h"
 #include "../proto_src/intellireader/srv/diagnostic.pb.h"
 #include "../proto_src/intellireader/srv/upload_config.pb.h"
+
+#include "../proto_src/intellireader/gui/screen.pb.h"
+#include "../proto_src/intellireader/gui/input_dialog.pb.h"
+#include "../proto_src/intellireader/gui/menu_dialog.pb.h"
+#include "../proto_src/intellireader/gui/draw_bitmap.pb.h"
+#include "../proto_src/intellireader/gui/slideshow.pb.h"
 
 #include "nlohmann/json.hpp"
 
@@ -105,6 +112,15 @@ private:
     Payload &generate_prepare_for_config(json &data);
     Payload &generate_upload_block_of_config(json &data);
     Payload &generate_check_configuration(json &data);
+
+    // GUI
+    void parse_widget(json &widgetJson, gui::widget::Widget &widget);
+
+    Payload &generate_show_screen(json &data);
+    // Payload &generate_input_dialog(json &data);
+    // Payload &generate_menu_dialog(json &data);
+    // Payload &generate_draw_bitmap(json &data);
+    // Payload &generate_slideshow(json &data);
 
 public:
     MessageCreator(std::string inputJsonPath);

@@ -1,0 +1,227 @@
+{
+    "messages":
+    [
+        {   
+            "title": "Show user-defined screen (text)",
+            "moduleID": 10,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "show_screen",
+            "data":
+            {
+                "root":
+                {
+                    "text":
+                    {
+                        "text": "a string of text",
+                        "font":"LARGE_FONT"
+                    }
+                },
+                "background":
+                {
+                    "solidFill": "SOLID_FILL_WHITE"
+                },
+                "foreground":
+                {
+                    "solidFillRGB": 255
+                },
+                "border": 
+                {
+                    "style": "SOLID_BORDER",
+                    "color": 
+                    {
+                        "solidFillRGB": 65280
+                    },
+                    "width": 2
+                }
+            }
+        },
+        {   
+            "title": "Show user-defined screen (qr code)",
+            "moduleID": 10,
+            "messageType": 1,
+            "messageID": 2,
+            "command": "show_screen",
+            "data":
+            {
+                "root":
+                {
+                    "verticalLayout":
+                    [
+                        {
+                            "QrCode":
+                            {
+                                "text": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                            }
+                        }
+                    ]
+                } ,
+                "background":
+                {
+                    "solidFill": "SOLID_FILL_BLACK"
+                },
+                "foreground":
+                {
+                    "solidFillRGB": 255
+                },
+                "border": 
+                {
+                    "style": "SOLID_BORDER",
+                    "color": 
+                    {
+                        "solidFillRGB": 65280
+                    },
+                    "width": 2
+                }
+            }
+        },
+        {
+            "title": "Show user-defined screen (example)",
+            "moduleID": 10,
+            "messageType": 1,
+            "messageID": 3,
+            "command": "show_screen",
+            "data":
+            {
+                "root":
+                {
+                    "verticalLayout": 
+                    [
+                        {
+                            "text": {
+                                "text": "TAP CARD",
+                                "font": "LARGE_FONT"
+                            }
+                        },
+                        {
+                            "picture": {
+                                "pictureID": "EMV_CONTACTLESS_SYMBOL"
+                            }
+                        },
+                        {
+                            "horizontalLayout": 
+                            [
+                                {
+                                    "picture": {
+                                        "pictureID": "VISA_LOGO",
+                                        "verticalAlignment": "BOTTOM",
+                                        "horizontalAlignment": "LEFT"
+                                    }
+                                },
+                                {
+                                    "picture": {
+                                        "pictureID": "MASTERCARD_LOGO",
+                                        "verticalAlignment": "BOTTOM"
+                                    }
+                                },
+                                {
+                                    "picture": {
+                                        "pictureID": "MIR_LOGO",
+                                        "verticalAlignment": "BOTTOM",
+                                        "horizontalAlignment": "RIGHT"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "title": "Input name screen dialog",
+            "moduleID": 10,
+            "messageType": 1,
+            "messageID": 4,
+            "command": "input_dialog",
+            "data":
+            {
+                "caption": "INPUT NAME",
+                "placeholder": "placeholder text",
+                "timeout": 10000,
+                "minTextLength": 1,
+                "maxTextLength": 30,
+                "layouts":
+                [
+                    "ENGLISH_LOWER",
+                    "ENGLISH_UPPER",
+                    "RUSSIAN_LOWER",
+                    "RUSSIAN_UPPER"
+                ]
+            }
+        },
+        {
+            "title": "Menu screen dialog (example)",
+            "moduleID": 10,
+            "messageType": 1,
+            "messageID": 5,
+            "command": "menu_dialog",
+            "data":
+            {
+                "caption": "Choose an item",
+                "itemList":
+                [
+                    { "text": "item1", "leafItem": { "id": 1 } },
+                    {
+                        "text": "item2",
+                        "submenu":
+                        [
+                            { "text": "sub item1", "leafItem": { "id": 11 } },
+                            { "text": "sub item2", "leafItem": { "id": 12 } },
+                            {
+                                "text": "sub item3",
+                                "submenu":
+                                [
+                                    { "text": "sub sub item1", "leafItem": { "id": 111 } },
+                                    { "text": "sub sub item2", "leafItem": { "id": 112 } }
+                                ]
+                            }
+                        ]
+                    },
+                    { "text": "item3", "leafItem": { "id": 3 } },
+                    { "text": "item4", "leafItem": { "id": 4 } },
+                    { "text": "item5", "leafItem": { "id": 5 } },
+                    { "text": "item6", "leafItem": { "id": 6 } },
+                    { "text": "item7", "leafItem": { "id": 7 } },
+                    { "text": "item8", "leafItem": { "id": 8 } },
+                    { "text": "item9", "leafItem": { "id": 9 } },
+                    { "text": "item10", "leafItem": { "id": 10 } },
+                    { "text": "item11", "leafItem": { "id": 11 } },
+                    { "text": "item12", "leafItem": { "id": 12 } },
+                    { "text": "item13", "leafItem": { "id": 13 } }
+                ]
+            }
+        },
+        {
+            "title": "Draw bitmap",
+            "moduleID": 10,
+            "messageType": 1,
+            "messageID": 6,
+            "command": "draw_bitmap",
+            "data":
+            {
+                "data": "bytesbytesbytesbytes",
+                "area":
+                {
+                    "x": 0,
+                    "y": 0,
+                    "width": 100,
+                    "height": 100
+                }
+            }
+        },
+        {
+            "title": "Draw bitmap",
+            "moduleID": 10,
+            "messageType": 1,
+            "messageID": 7,
+            "command": "slideshow",
+            "data":
+            {
+                "name": "visa.bmp",
+                "background": { "solidFill": "SOLID_FILL_WHITE" },
+                "framesCount": 33,
+                "delay_ms": 40
+            }
+        }
+    ]
+}

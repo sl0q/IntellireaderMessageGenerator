@@ -70,8 +70,8 @@ google::protobuf::Message *MessageCreator::find_protobuf_module(uint8_t moduleID
         // case 9:
         //     return new NtagCard();
 
-        // case 0x0a:
-        //     return new Gui();
+    case 0x0a:
+        return new Gui();
 
         // case 0x0b:
         //     return new Touchscreen();
@@ -154,7 +154,7 @@ void MessageCreator::generate_messages(const std::string inputFilePath, const st
         if (newJsonMessage.count("checksumValid") != 0)
             isChecksumValid = newJsonMessage.at("checksumValid").get<bool>();
 
-        Payload *payload;
+        Payload *payload = nullptr;
 
         switch (this->moduleID)
         {
@@ -233,17 +233,34 @@ void MessageCreator::generate_messages(const std::string inputFilePath, const st
                 payload = &generate_check_configuration(data);
             break;
         }
+        case 10:
+        {
+            if ("show_screen" == command)
+                payload = &generate_show_screen(data);
+            // else if ("input_dialog" == command)
+            //     payload = &generate_input_dialog(data);
+            // else if ("menu_dialog" == command)
+            //     payload = &generate_menu_dialog(data);
+            // else if ("draw_bitmap" == command)
+            //     payload = &generate_draw_bitmap(data);
+            // else if ("slideshow" == command)
+            //     payload = &generate_slideshow(data);
+            break;
+        }
         default:
             break;
         }
 
-        auto m = compose_message(*payload, isChecksumValid);
-        file << m.getDataAsString() << "\n"
-             << bs64::base64_encode(m.getData()) << "\n"
-             << m.getDebugString() << "\n\n";
+        if (payload)
+        {
+            auto m = compose_message(*payload, isChecksumValid);
+            file << m.getDataAsString() << "\n"
+                 << bs64::base64_encode(m.getData()) << "\n"
+                 << m.getDebugString() << "\n\n";
 
-        delete payload;
-        file << "###################################################################\n\n\n";
+            delete payload;
+            file << "###################################################################\n\n\n";
+        }
 
         file.close();
 
@@ -977,6 +994,437 @@ Payload &MessageCreator::generate_check_configuration(json &data)
     auto checkConfig = new srv::upload_config::CheckConfiguration();
 
     dynamic_cast<Service *>(this->msg)->set_allocated_check_configuration(checkConfig);
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+void MessageCreator::parse_widget(json &widgetJson, gui::widget::Widget &widget)
+{
+    // void *widgetType;
+    // void *widgetType = new gui::widget::VerticalLayout();
+    // auto *widgetType = new gui::widget::HorizontalLayout();
+    // auto *widgetType = new gui::widget::Text();
+    // auto *widgetType = new gui::widget::Picture();
+    if (widgetJson.count("verticalLayout") != 0)
+    {
+        auto widgetType = new gui::widget::VerticalLayout();
+        widget.set_allocated_vertical_layout(widgetType);
+        for (auto &newWidgetJson : widgetJson["verticalLayout"])
+        {
+            auto newWidget = widgetType->add_widgets();
+            parse_widget(newWidgetJson, *newWidget);
+        }
+    }
+    else if (widgetJson.count("horizontalLayout") != 0)
+    {
+        auto widgetType = new gui::widget::HorizontalLayout();
+        widget.set_allocated_horizontal_layout(widgetType);
+        for (auto &newWidgetJson : widgetJson["horizontalLayout"])
+        {
+            auto newWidget = ((gui::widget::HorizontalLayout *)widgetType)->add_widgets();
+            parse_widget(newWidgetJson, *newWidget);
+        }
+    }
+    else if (widgetJson.count("text") != 0)
+    {
+        auto widgetType = new gui::widget::Text();
+        widget.set_allocated_text(widgetType);
+
+        if (widgetJson["text"].count("text") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:text] field in [" + this->inputFilePath + "] file.");
+        widgetType->set_text(widgetJson["text"].at("text").get<std::string>());
+
+        if (widgetJson["text"].count("verticalAlignment") != 0)
+        {
+            gui::alignment::VerticalAlignment newVerticalAlignment;
+            if (!gui::alignment::VerticalAlignment_Parse(widgetJson["text"].at("verticalAlignment").get<std::string>(), &newVerticalAlignment))
+                throw std::invalid_argument("Failed to parse [verticalAlignment] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:verticalAlignment].");
+            widgetType->set_vertical_alignment(newVerticalAlignment);
+        }
+
+        if (widgetJson["text"].count("horizontalAlignment") != 0)
+        {
+            gui::alignment::HorizontalAlignment newHorizontalAlignment;
+            if (!gui::alignment::HorizontalAlignment_Parse(widgetJson["text"].at("horizontalAlignment").get<std::string>(), &newHorizontalAlignment))
+                throw std::invalid_argument("Failed to parse [horizontalAlignment] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:horizontalAlignment].");
+            widgetType->set_horizontal_alignment(newHorizontalAlignment);
+        }
+
+        if (widgetJson["text"].count("background") != 0)
+        {
+            auto newBackground = new gui::background::Background(); // probably pointer needed
+            widgetType->set_allocated_background(newBackground);
+
+            if (widgetJson["text"]["background"].count("solidFill") != 0)
+            {
+                gui::solidfill::SolidFill newSolidFill;
+                if (!gui::solidfill::SolidFill_Parse(widgetJson["text"]["background"].at("solidFill").get<std::string>(), &newSolidFill))
+                    throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:background:solidFill].");
+                newBackground->set_solid_fill(newSolidFill);
+            }
+            else if (widgetJson["text"]["background"].count("solidFillRGB") != 0)
+                newBackground->set_solid_fill_rgb(widgetJson["text"]["background"].at("solidFillRGB").get<uint32_t>());
+            else
+                throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:background:???] field in [" + this->inputFilePath + "] file.");
+        }
+
+        if (widgetJson["text"].count("foreground") != 0)
+        {
+            auto newForeground = new gui::foreground::Foreground; // probably pointer needed
+            widgetType->set_allocated_foreground(newForeground);
+
+            if (widgetJson["text"]["foreground"].count("solidFill") != 0)
+            {
+                gui::solidfill::SolidFill newSolidFill;
+                if (!gui::solidfill::SolidFill_Parse(widgetJson["text"]["foreground"].at("solidFill").get<std::string>(), &newSolidFill))
+                    throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:foreground:solidFill].");
+                newForeground->set_solid_fill(newSolidFill);
+            }
+            else if (widgetJson["text"]["foreground"].count("solidFillRGB") != 0)
+                newForeground->set_solid_fill_rgb(widgetJson["text"]["foreground"].at("solidFillRGB").get<uint32_t>());
+            else
+                throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:foreground:???] field in [" + this->inputFilePath + "] file.");
+        }
+
+        if (widgetJson["text"].count("font") != 0)
+        {
+            gui::font::Font newFont;
+            if (!gui::font::Font_Parse(widgetJson["text"].at("font").get<std::string>(), &newFont))
+                throw std::invalid_argument("Failed to parse [font] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:font].");
+            widgetType->set_font(newFont);
+        }
+
+        if (widgetJson["text"].count("buttonID") != 0)
+            widgetType->set_button_id(widgetJson["text"].at("buttonID").get<uint32_t>());
+
+        auto newBorder = new gui::border::Border(); // probably pointer needed
+        widgetType->set_allocated_border(newBorder);
+        if (widgetJson["text"].count("border"))
+        {
+
+            if (widgetJson["text"]["border"].count("style") == 0)
+                throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:border:style] field in [" + this->inputFilePath + "] file.");
+
+            gui::border::BorderStyle newBorderStyle;
+            if (!gui::border::BorderStyle_Parse(widgetJson["text"]["border"].at("style").get<std::string>(), &newBorderStyle))
+                throw std::invalid_argument("Failed to parse [style] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:border:style].");
+            newBorder->set_style(newBorderStyle);
+            if (widgetJson["text"]["border"].count("color") != 0)
+            {
+                gui::background::Background newColor;
+                if (widgetJson["text"]["border"]["color"].count("solidFill") != 0)
+                {
+                    gui::solidfill::SolidFill newSolidFill;
+                    if (!gui::solidfill::SolidFill_Parse(widgetJson["text"]["border"]["color"].at("solidFill").get<std::string>(), &newSolidFill))
+                        throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:border:color:solidFill].");
+                    newColor.set_solid_fill(newSolidFill);
+                }
+                else if (widgetJson["text"]["border"]["color"].count("solidFillRGB") != 0)
+                    newColor.set_solid_fill_rgb(widgetJson["text"]["border"]["color"].at("solidFillRGB").get<uint32_t>());
+                else
+                    throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:::text:border:color:???] field in [" + this->inputFilePath + "] file.");
+                newBorder->set_allocated_color(&newColor);
+            }
+        }
+    }
+    else if (widgetJson.count("picture") != 0)
+    {
+        auto widgetType = new gui::widget::Picture();
+
+        if (widgetJson["picture"].count("pictureID") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:root:::picture:pictureID] field in [" + this->inputFilePath + "] file.");
+
+        // auto newPicture = new gui::widget::Picture(); // probably pointer needed
+
+        gui::picture_id::PictureId newPictureID;
+        if (!gui::picture_id::PictureId_Parse(widgetJson["picture"].at("pictureID").get<std::string>(), &newPictureID))
+            throw std::invalid_argument("Failed to parse [pictureID] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::picture:pictureID].");
+        widgetType->set_picture_id(newPictureID);
+
+        if (widgetJson["picture"].count("verticalAlignment") != 0)
+        {
+            gui::alignment::VerticalAlignment newVerticalAlignment;
+            if (!gui::alignment::VerticalAlignment_Parse(widgetJson["picture"].at("verticalAlignment").get<std::string>(), &newVerticalAlignment))
+                throw std::invalid_argument("Failed to parse [verticalAlignment] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::picture:verticalAlignment].");
+            widgetType->set_vertical_alignment(newVerticalAlignment);
+        }
+
+        if (widgetJson["picture"].count("horizontalAlignment") != 0)
+        {
+            gui::alignment::HorizontalAlignment newHorizontalAlignment;
+            if (!gui::alignment::HorizontalAlignment_Parse(widgetJson["picture"].at("horizontalAlignment").get<std::string>(), &newHorizontalAlignment))
+                throw std::invalid_argument("Failed to parse [horizontalAlignment] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::picture:horizontalAlignment].");
+            widgetType->set_horizontal_alignment(newHorizontalAlignment);
+        }
+
+        if (widgetJson["picture"].count("background") != 0)
+        {
+            auto newBackground = new gui::background::Background(); // probably pointer needed
+            if (widgetJson["picture"]["background"].count("solidFill") != 0)
+            {
+                gui::solidfill::SolidFill newSolidFill;
+                if (!gui::solidfill::SolidFill_Parse(widgetJson["picture"]["background"].at("solidFill").get<std::string>(), &newSolidFill))
+                    throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::picture:background:solidFill].");
+                newBackground->set_solid_fill(newSolidFill);
+            }
+            else if (widgetJson["picture"]["background"].count("solidFillRGB") != 0)
+                newBackground->set_solid_fill_rgb(widgetJson["picture"]["background"].at("solidFillRGB").get<uint32_t>());
+            else
+                throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:::picture:background:???] field in [" + this->inputFilePath + "] file.");
+            widgetType->set_allocated_background(newBackground);
+        }
+
+        if (widgetJson["picture"].count("buttonID") != 0)
+            widgetType->set_button_id(widgetJson["picture"].at("buttonID").get<uint32_t>());
+
+        widget.set_allocated_picture((gui::widget::Picture *)widgetType);
+    }
+    else if (widgetJson.count("QrCode") != 0)
+    {
+        auto widgetType = new gui::widget::QrCode();
+
+        if (widgetJson["QrCode"].count("text") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:root:::QrCode:text] field in [" + this->inputFilePath + "] file.");
+
+        // auto newQrCode = new gui::widget::QrCode(); // pointer?
+
+        widgetType->set_text(widgetJson["QrCode"].at("text").get<std::string>());
+
+        if (widgetJson["QrCode"].count("moduleDimension") != 0)
+            widgetType->set_module_dimension(widgetJson["QrCode"].at("moduleDimension").get<uint32_t>());
+
+        if (widgetJson["QrCode"].count("verticalAlignment") != 0)
+        {
+            gui::alignment::VerticalAlignment newVerticalAlignment;
+            if (!gui::alignment::VerticalAlignment_Parse(widgetJson["QrCode"].at("verticalAlignment").get<std::string>(), &newVerticalAlignment))
+                throw std::invalid_argument("Failed to parse [verticalAlignment] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::QrCode:verticalAlignment].");
+            widgetType->set_vertical_alignment(newVerticalAlignment);
+        }
+
+        if (widgetJson["QrCode"].count("horizontalAlignment") != 0)
+        {
+            gui::alignment::HorizontalAlignment newHorizontalAlignment;
+            if (!gui::alignment::HorizontalAlignment_Parse(widgetJson["QrCode"].at("horizontalAlignment").get<std::string>(), &newHorizontalAlignment))
+                throw std::invalid_argument("Failed to parse [horizontalAlignment] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::QrCode:horizontalAlignment].");
+            widgetType->set_horizontal_alignment(newHorizontalAlignment);
+        }
+
+        widget.set_allocated_qr_code((gui::widget::QrCode *)widgetType);
+    }
+    else if (widgetJson.count("customerPicture") != 0)
+    {
+        auto widgetType = new gui::widget::CustomerPicture();
+
+        if (widgetJson["customerPicture"].count("name") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:root:::customerPicture:name] field in [" + this->inputFilePath + "] file.");
+
+        // gui::widget::CustomerPicture newCustomerPicture;
+
+        widgetType->set_name(widgetJson["customerPicture"].at("name").get<std::string>());
+
+        if (widgetJson["customerPicture"].count("verticalAlignment") != 0)
+        {
+            gui::alignment::VerticalAlignment newVerticalAlignment;
+            if (!gui::alignment::VerticalAlignment_Parse(widgetJson["customerPicture"].at("verticalAlignment").get<std::string>(), &newVerticalAlignment))
+                throw std::invalid_argument("Failed to parse [verticalAlignment] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::customerPicture:verticalAlignment].");
+            widgetType->set_vertical_alignment(newVerticalAlignment);
+        }
+
+        if (widgetJson["customerPicture"].count("horizontalAlignment") != 0)
+        {
+            gui::alignment::HorizontalAlignment newHorizontalAlignment;
+            if (!gui::alignment::HorizontalAlignment_Parse(widgetJson["customerPicture"].at("horizontalAlignment").get<std::string>(), &newHorizontalAlignment))
+                throw std::invalid_argument("Failed to parse [horizontalAlignment] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::customerPicture:horizontalAlignment].");
+            widgetType->set_horizontal_alignment(newHorizontalAlignment);
+        }
+
+        if (widgetJson["customerPicture"].count("background") != 0)
+        {
+            gui::background::Background newBackground; // probably pointer needed
+            if (widgetJson["customerPicture"]["background"].count("solidFill") != 0)
+            {
+                gui::solidfill::SolidFill newSolidFill;
+                if (!gui::solidfill::SolidFill_Parse(widgetJson["customerPicture"]["background"].at("solidFill").get<std::string>(), &newSolidFill))
+                    throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::customerPicture:background:solidFill].");
+                newBackground.set_solid_fill(newSolidFill);
+            }
+            else if (widgetJson["customerPicture"]["background"].count("solidFillRGB") != 0)
+                newBackground.set_solid_fill_rgb(widgetJson["customerPicture"]["background"].at("solidFillRGB").get<uint32_t>());
+            else
+                throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:::customerPicture:background:???] field in [" + this->inputFilePath + "] file.");
+            widgetType->set_allocated_background(&newBackground);
+        }
+
+        if (widgetJson["customerPicture"].count("buttonID") != 0)
+            widgetType->set_button_id(widgetJson["customerPicture"].at("buttonID").get<uint32_t>());
+
+        widget.set_allocated_customer_picture((gui::widget::CustomerPicture *)widgetType);
+    }
+    else if (widgetJson.count("generateText") != 0)
+    {
+        auto widgetType = new gui::widget::GeneratedText();
+
+        if (widgetJson["generatedText"].count("textID") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:root:::generatedText:textID] field in [" + this->inputFilePath + "] file.");
+
+        // gui::widget::GeneratedText newGeneratedText; // pointer?
+
+        gui::text_id::TextId newTextId;
+        if (!gui::text_id::TextId_Parse(widgetJson["generatedText"].at("textID").get<std::string>(), &newTextId))
+            throw std::invalid_argument("Failed to parse [textID] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::generatedText:textID].");
+        widgetType->set_text_id(newTextId);
+
+        if (widgetJson["generatedText"].count("verticalAlignment") != 0)
+        {
+            gui::alignment::VerticalAlignment newVerticalAlignment;
+            if (!gui::alignment::VerticalAlignment_Parse(widgetJson["generatedText"].at("verticalAlignment").get<std::string>(), &newVerticalAlignment))
+                throw std::invalid_argument("Failed to parse [verticalAlignment] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::generatedText:verticalAlignment].");
+            widgetType->set_vertical_alignment(newVerticalAlignment);
+        }
+
+        if (widgetJson["generatedText"].count("horizontalAlignment") != 0)
+        {
+            gui::alignment::HorizontalAlignment newHorizontalAlignment;
+            if (!gui::alignment::HorizontalAlignment_Parse(widgetJson["generatedText"].at("horizontalAlignment").get<std::string>(), &newHorizontalAlignment))
+                throw std::invalid_argument("Failed to parse [horizontalAlignment] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::generatedText:horizontalAlignment].");
+            widgetType->set_horizontal_alignment(newHorizontalAlignment);
+        }
+
+        if (widgetJson["generatedText"].count("background") != 0)
+        {
+            gui::background::Background newBackground; // probably pointer needed
+            if (widgetJson["generatedText"]["background"].count("solidFill") != 0)
+            {
+                gui::solidfill::SolidFill newSolidFill;
+                if (!gui::solidfill::SolidFill_Parse(widgetJson["generatedText"]["background"].at("solidFill").get<std::string>(), &newSolidFill))
+                    throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::generatedText:background:solidFill].");
+                newBackground.set_solid_fill(newSolidFill);
+            }
+            else if (widgetJson["generatedText"]["background"].count("solidFillRGB") != 0)
+                newBackground.set_solid_fill_rgb(widgetJson["generatedText"]["background"].at("solidFillRGB").get<uint32_t>());
+            else
+                throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:::generatedText:background:???] field in [" + this->inputFilePath + "] file.");
+            widgetType->set_allocated_background(&newBackground);
+        }
+
+        if (widgetJson["generatedText"].count("foreground") != 0)
+        {
+            gui::foreground::Foreground newForeground; // probably pointer needed
+            if (widgetJson["generatedText"]["foreground"].count("solidFill") != 0)
+            {
+                gui::solidfill::SolidFill newSolidFill;
+                if (!gui::solidfill::SolidFill_Parse(widgetJson["generatedText"]["foreground"].at("solidFill").get<std::string>(), &newSolidFill))
+                    throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::generatedText:foreground:solidFill].");
+                newForeground.set_solid_fill(newSolidFill);
+            }
+            else if (widgetJson["generatedText"]["foreground"].count("solidFillRGB") != 0)
+                newForeground.set_solid_fill_rgb(widgetJson["generatedText"]["foreground"].at("solidFillRGB").get<uint32_t>());
+            else
+                throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:::generatedText:foreground:???] field in [" + this->inputFilePath + "] file.");
+            widgetType->set_allocated_foreground(&newForeground);
+        }
+
+        if (widgetJson["generatedText"].count("font") != 0)
+        {
+            gui::font::Font newFont;
+            if (!gui::font::Font_Parse(widgetJson["generatedText"].at("font").get<std::string>(), &newFont))
+                throw std::invalid_argument("Failed to parse [font] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:root:::generatedText:font].");
+            widgetType->set_font(newFont);
+        }
+
+        if (widgetJson["generatedText"].count("buttonID") != 0)
+            widgetType->set_button_id(widgetJson["generatedText"].at("buttonID").get<uint32_t>());
+
+        widget.set_allocated_generated_text((gui::widget::GeneratedText *)widgetType);
+    }
+    else
+        throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:root:???] field in [" + this->inputFilePath + "] file.");
+}
+
+Payload &MessageCreator::generate_show_screen(json &data)
+{
+    if (data.count("root") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:root] field in [" + this->inputFilePath + "] file.");
+
+    auto showScreen = new gui::screen::ShowScreen();
+
+    dynamic_cast<Gui *>(this->msg)->set_allocated_show_screen(showScreen);
+
+    auto root = new gui::widget::Widget();
+    parse_widget(data["root"], *root);
+    showScreen->set_allocated_root(root);
+
+    if (data.count("background") != 0)
+    {
+        auto newBackground = new gui::background::Background(); // probably pointer needed
+        if (data["background"].count("solidFill") != 0)
+        {
+            gui::solidfill::SolidFill newSolidFill;
+            if (!gui::solidfill::SolidFill_Parse(data["background"].at("solidFill").get<std::string>(), &newSolidFill))
+                throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:background:solidFill].");
+            newBackground->set_solid_fill(newSolidFill);
+        }
+        else if (data["background"].count("solidFillRGB") != 0)
+            newBackground->set_solid_fill_rgb(data["background"].at("solidFillRGB").get<uint32_t>());
+        else
+            throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:background:???] field in [" + this->inputFilePath + "] file.");
+        showScreen->set_allocated_background(newBackground);
+    }
+
+    if (data.count("foreground") != 0)
+    {
+        auto newForeground = new gui::foreground::Foreground(); // probably pointer needed
+        if (data["foreground"].count("solidFill") != 0)
+        {
+            gui::solidfill::SolidFill newSolidFill;
+            if (!gui::solidfill::SolidFill_Parse(data["foreground"].at("solidFill").get<std::string>(), &newSolidFill))
+                throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data::foreground:solidFill].");
+            newForeground->set_solid_fill(newSolidFill);
+        }
+        else if (data["foreground"].count("solidFillRGB") != 0)
+            newForeground->set_solid_fill_rgb(data["foreground"].at("solidFillRGB").get<uint32_t>());
+        else
+            throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data::foreground:???] field in [" + this->inputFilePath + "] file.");
+        showScreen->set_allocated_foreground(newForeground);
+    }
+
+    if (data.count("border"))
+    {
+        auto newBorder = new gui::border::Border(); // probably pointer needed
+
+        if (data["border"].count("style") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:border:style] field in [" + this->inputFilePath + "] file.");
+
+        gui::border::BorderStyle newBorderStyle;
+        if (!gui::border::BorderStyle_Parse(data["border"].at("style").get<std::string>(), &newBorderStyle))
+            throw std::invalid_argument("Failed to parse [style] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:border:style].");
+        newBorder->set_style(newBorderStyle);
+        if (data["border"].count("color") != 0)
+        {
+            auto newColor = new gui::background::Background();
+            if (data["border"]["color"].count("solidFill") != 0)
+            {
+                gui::solidfill::SolidFill newSolidFill;
+                if (!gui::solidfill::SolidFill_Parse(data["border"]["color"].at("solidFill").get<std::string>(), &newSolidFill))
+                    throw std::invalid_argument("Failed to parse [solidFill] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:border:color:solidFill].");
+                newColor->set_solid_fill(newSolidFill);
+            }
+            else if (data["border"]["color"].count("solidFillRGB") != 0)
+                newColor->set_solid_fill_rgb(data["border"]["color"].at("solidFillRGB").get<uint32_t>());
+            else
+                throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:border:color:???] field in [" + this->inputFilePath + "] file.");
+            newBorder->set_allocated_color(newColor);
+        }
+        showScreen->set_allocated_border(newBorder);
+    }
 
     std::cout << this->msg->DebugString() << std::endl;
 
