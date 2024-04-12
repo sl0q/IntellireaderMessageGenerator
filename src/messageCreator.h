@@ -120,7 +120,7 @@ private:
     void parse_border(json &borderJson, gui::border::Border &border);
 
     Payload &generate_show_screen(json &data);
-    // Payload &generate_input_dialog(json &data);
+    Payload &generate_input_dialog(json &data);
     // Payload &generate_menu_dialog(json &data);
     // Payload &generate_draw_bitmap(json &data);
     // Payload &generate_slideshow(json &data);

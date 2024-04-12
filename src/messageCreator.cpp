@@ -237,8 +237,8 @@ void MessageCreator::generate_messages(const std::string inputFilePath, const st
         {
             if ("show_screen" == command)
                 payload = &generate_show_screen(data);
-            // else if ("input_dialog" == command)
-            //     payload = &generate_input_dialog(data);
+            else if ("input_dialog" == command)
+                payload = &generate_input_dialog(data);
             // else if ("menu_dialog" == command)
             //     payload = &generate_menu_dialog(data);
             // else if ("draw_bitmap" == command)
@@ -1342,6 +1342,52 @@ Payload &MessageCreator::generate_show_screen(json &data)
         auto newBorder = new gui::border::Border();
         parse_border(data["border"], *newBorder);
         showScreen->set_allocated_border(newBorder);
+    }
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_input_dialog(json &data)
+{
+    if (data.count("caption") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:caption] field in [" + this->inputFilePath + "] file.");
+
+    auto inputDialog = new gui::input_dialog::InputDialog();
+    dynamic_cast<Gui *>(this->msg)->set_allocated_input_dialog(inputDialog);
+
+    inputDialog->set_caption(data.at("caption").get<std::string>());
+
+    if (data.count("placeholder") != 0)
+        inputDialog->set_placeholder(data.at("placeholder").get<std::string>());
+
+    if (data.count("timeout") != 0)
+        inputDialog->set_timeout(data.at("timeout").get<uint32_t>());
+
+    if (data.count("minTextLength") != 0)
+        inputDialog->set_min_text_length(data.at("minTextLength").get<uint32_t>());
+
+    if (data.count("maxTextLength") != 0)
+        inputDialog->set_max_text_length(data.at("maxTextLength").get<uint32_t>());
+
+    if (data.count("layouts") != 0)
+    {
+        int i = 0;
+        for (auto &layoutJson : data["layouts"])
+        {
+            gui::input_dialog::KeypadLayout newLayout;
+            if (!gui::input_dialog::KeypadLayout_Parse(layoutJson.get<std::string>(), &newLayout))
+                throw std::invalid_argument("Failed to parse [layouts:" + std::to_string(i) + "] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:layouts:" + std::to_string(i) + "].");
+            inputDialog->add_layouts(newLayout);
+            ++i;
+        }
     }
 
     std::cout << this->msg->DebugString() << std::endl;
