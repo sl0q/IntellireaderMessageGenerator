@@ -241,10 +241,10 @@ void MessageCreator::generate_messages(const std::string inputFilePath, const st
                 payload = &generate_input_dialog(data);
             else if ("menu_dialog" == command)
                 payload = &generate_menu_dialog(data);
-            // else if ("draw_bitmap" == command)
-            //     payload = &generate_draw_bitmap(data);
-            // else if ("slideshow" == command)
-            //     payload = &generate_slideshow(data);
+            else if ("draw_bitmap" == command)
+                payload = &generate_draw_bitmap(data);
+            else if ("slideshow" == command)
+                payload = &generate_slideshow(data);
             break;
         }
         default:
@@ -1451,6 +1451,97 @@ Payload &MessageCreator::generate_menu_dialog(json &data)
 
     if (data.count("timeout") != 0)
         menuDialog->set_timeout(data.at("timeout").get<uint32_t>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_draw_bitmap(json &data)
+{
+    if (data.count("data") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:data] field in [" + this->inputFilePath + "] file.");
+
+    auto drawBitmap = new gui::draw_bitmap::DrawBitmap();
+    dynamic_cast<Gui *>(this->msg)->set_allocated_draw_bitmap(drawBitmap);
+
+    drawBitmap->set_data(data.at("data").get<std::string>());
+
+    if (data.count("area"))
+    {
+        if (data["area"].count("x") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:area:x] field in [" + this->inputFilePath + "] file.");
+        if (data["area"].count("y") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:area:y] field in [" + this->inputFilePath + "] file.");
+        if (data["area"].count("width") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:area:width] field in [" + this->inputFilePath + "] file.");
+        if (data["area"].count("height") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:area:height] field in [" + this->inputFilePath + "] file.");
+
+        auto newArea = new gui::draw_bitmap::Area();
+
+        newArea->set_x(data["area"].at("x").get<uint32_t>());
+        newArea->set_y(data["area"].at("y").get<uint32_t>());
+        newArea->set_width(data["area"].at("width").get<uint32_t>());
+        newArea->set_height(data["area"].at("height").get<uint32_t>());
+
+        drawBitmap->set_allocated_area(newArea);
+    }
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_slideshow(json &data)
+{
+    if (data.count("name") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:name] field in [" + this->inputFilePath + "] file.");
+    if (data.count("background") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:background] field in [" + this->inputFilePath + "] file.");
+    if (data.count("framesCount") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:framesCount] field in [" + this->inputFilePath + "] file.");
+
+    auto slideshow = new gui::slideshow::Slideshow();
+    dynamic_cast<Gui *>(this->msg)->set_allocated_slideshow(slideshow);
+
+    slideshow->set_name(data.at("name").get<std::string>());
+
+    auto newBackground = new gui::background::Background();
+    parse_background(data["background"], *newBackground);
+    slideshow->set_allocated_background(newBackground);
+
+    slideshow->set_frames_count(data.at("framesCount").get<uint32_t>());
+
+    if (data.count("delay_ms"))
+        slideshow->set_delay_ms(data.at("delay_ms").get<uint32_t>());
+    if (data.count("verticalAlignment"))
+    {
+        gui::alignment::VerticalAlignment newAlignment;
+        if (!gui::alignment::VerticalAlignment_Parse(data.at("verticalAlignment").get<std::string>(), &newAlignment))
+            throw std::invalid_argument("Failed to parse [verticalAlignment] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:verticalAlignment].");
+        slideshow->set_vertical_alignment(newAlignment);
+    }
+
+    if (data.count("horizontalAlignment"))
+    {
+        gui::alignment::HorizontalAlignment newAlignment;
+        if (!gui::alignment::HorizontalAlignment_Parse(data.at("horizontalAlignment").get<std::string>(), &newAlignment))
+            throw std::invalid_argument("Failed to parse [horizontalAlignment] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:horizontalAlignment].");
+        slideshow->set_horizontal_alignment(newAlignment);
+    }
 
     std::cout << this->msg->DebugString() << std::endl;
 

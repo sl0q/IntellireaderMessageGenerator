@@ -210,7 +210,7 @@
             }
         },
         {
-            "title": "Draw bitmap",
+            "title": "Make slideshow",
             "moduleID": 10,
             "messageType": 1,
             "messageID": 7,

@@ -124,8 +124,8 @@ private:
     Payload &generate_show_screen(json &data);
     Payload &generate_input_dialog(json &data);
     Payload &generate_menu_dialog(json &data);
-    // Payload &generate_draw_bitmap(json &data);
-    // Payload &generate_slideshow(json &data);
+    Payload &generate_draw_bitmap(json &data);
+    Payload &generate_slideshow(json &data);
 
 public:
     MessageCreator(std::string inputJsonPath);
