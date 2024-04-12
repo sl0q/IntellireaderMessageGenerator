@@ -119,9 +119,11 @@ private:
     void parse_foreground(json &foregroundJson, gui::foreground::Foreground &foreground);
     void parse_border(json &borderJson, gui::border::Border &border);
 
+    void parse_item_list(json &itemListJson, gui::menu_dialog::ItemList &itemList);
+
     Payload &generate_show_screen(json &data);
     Payload &generate_input_dialog(json &data);
-    // Payload &generate_menu_dialog(json &data);
+    Payload &generate_menu_dialog(json &data);
     // Payload &generate_draw_bitmap(json &data);
     // Payload &generate_slideshow(json &data);
 

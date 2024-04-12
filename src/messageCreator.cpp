@@ -239,8 +239,8 @@ void MessageCreator::generate_messages(const std::string inputFilePath, const st
                 payload = &generate_show_screen(data);
             else if ("input_dialog" == command)
                 payload = &generate_input_dialog(data);
-            // else if ("menu_dialog" == command)
-            //     payload = &generate_menu_dialog(data);
+            else if ("menu_dialog" == command)
+                payload = &generate_menu_dialog(data);
             // else if ("draw_bitmap" == command)
             //     payload = &generate_draw_bitmap(data);
             // else if ("slideshow" == command)
@@ -1310,6 +1310,38 @@ void MessageCreator::parse_border(json &borderJson, gui::border::Border &border)
     }
 }
 
+void MessageCreator::parse_item_list(json &itemListJson, gui::menu_dialog::ItemList &itemList)
+{
+    int i = 0;
+    for (auto &itemJson : itemListJson)
+    {
+        auto newItem = itemList.add_items();
+
+        if (itemJson.count("text") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:::itemList:" + std::to_string(i) + ":text] field in [" + this->inputFilePath + "] file.");
+        newItem->set_text(itemJson.at("text").get<std::string>());
+
+        if (itemJson.count("leafItem") != 0)
+        {
+            auto newLeafItem = new gui::menu_dialog::LeafItem();
+            if (itemJson["leafItem"].count("id") == 0)
+                throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:::itemList:" + std::to_string(i) + ":leafItem:id] field in [" + this->inputFilePath + "] file.");
+            newLeafItem->set_id(itemJson["leafItem"].at("id").get<uint32_t>());
+            newItem->set_allocated_leaf_item(newLeafItem);
+        }
+        else if (itemJson.count("submenu") != 0)
+        {
+            auto newSubmenu = new gui::menu_dialog::ItemList();
+            parse_item_list(itemJson["submenu"], *newSubmenu);
+            newItem->set_allocated_submenu(newSubmenu);
+        }
+        else
+            throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:::itemList:" + std::to_string(i) + ":item:???] field in [" + this->inputFilePath + "] file.");
+
+        ++i;
+    }
+}
+
 Payload &MessageCreator::generate_show_screen(json &data)
 {
     if (data.count("root") == 0)
@@ -1389,6 +1421,36 @@ Payload &MessageCreator::generate_input_dialog(json &data)
             ++i;
         }
     }
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_menu_dialog(json &data)
+{
+    if (data.count("caption") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:caption] field in [" + this->inputFilePath + "] file.");
+    if (data.count("itemList") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:itemList] field in [" + this->inputFilePath + "] file.");
+
+    auto menuDialog = new gui::menu_dialog::MenuDialog();
+    dynamic_cast<Gui *>(this->msg)->set_allocated_menu_dialog(menuDialog);
+
+    menuDialog->set_caption(data.at("caption").get<std::string>());
+
+    auto newItemList = new gui::menu_dialog::ItemList();
+    parse_item_list(data["itemList"], *newItemList);
+    menuDialog->set_allocated_item_list(newItemList);
+
+    if (data.count("timeout") != 0)
+        menuDialog->set_timeout(data.at("timeout").get<uint32_t>());
 
     std::cout << this->msg->DebugString() << std::endl;
 
