@@ -7,46 +7,13 @@
 
 #include <google/protobuf/message.h>
 #include <google/protobuf/text_format.h>
-// #include <google/protobuf/util/json_util.h>
 
 // #include "../proto_src/intellireader/commands2.pb.h"
 // #include "../proto_src/intellireader/commands3.pb.h"
 // #include "../proto_src/intellireader/commands4.pb.h"
 // #include "../proto_src/intellireader/commands5.pb.h"
-#include "../proto_src/intellireader/commands6.pb.h"
-
-#include "../proto_src/intellireader/misc/leds.pb.h"
-#include "../proto_src/intellireader/misc/reboot.pb.h"
-#include "../proto_src/intellireader/misc/device.pb.h"
-#include "../proto_src/intellireader/misc/buzzer.pb.h"
-#include "../proto_src/intellireader/misc/echo.pb.h"
-#include "../proto_src/intellireader/misc/stats.pb.h"
-#include "../proto_src/intellireader/misc/lan_settings.pb.h"
-#include "../proto_src/intellireader/misc/baudrate.pb.h"
-
-#include "../proto_src/intellireader/contact/power_on.pb.h"
-#include "../proto_src/intellireader/contact/power_off.pb.h"
-#include "../proto_src/intellireader/contact/card_slot.pb.h"
-#include "../proto_src/intellireader/contact/iso7816_4.pb.h"
-
-#include "../proto_src/intellireader/contactless/poll_for_token.pb.h"
-#include "../proto_src/intellireader/contactless/emv_removal.pb.h"
-#include "../proto_src/intellireader/contactless/transceive.pb.h"
-#include "../proto_src/intellireader/contactless/iso14443_4.pb.h"
-#include "../proto_src/intellireader/contactless/rf_field.pb.h"
-#include "../proto_src/intellireader/contactless/iso14443_4a.pb.h"
-
-#include "../proto_src/intellireader/contactless/transaction.pb.h"
-
-#include "../proto_src/intellireader/srv/firmware_update.pb.h"
-#include "../proto_src/intellireader/srv/diagnostic.pb.h"
-#include "../proto_src/intellireader/srv/upload_config.pb.h"
-
-#include "../proto_src/intellireader/gui/screen.pb.h"
-#include "../proto_src/intellireader/gui/input_dialog.pb.h"
-#include "../proto_src/intellireader/gui/menu_dialog.pb.h"
-#include "../proto_src/intellireader/gui/draw_bitmap.pb.h"
-#include "../proto_src/intellireader/gui/slideshow.pb.h"
+// #include "../proto_src/intellireader/commands6.pb.h"
+#include "../proto_src/intellireader/commands7.pb.h"
 
 #include "nlohmann/json.hpp"
 
@@ -102,6 +69,18 @@ private:
 
     // ContactlessLevel2
     Payload &generate_perform_transaction(json &data);
+
+    // Mifare classic
+    Payload &generate_mfr_classic_auth_on_clear_key(json &data);
+    Payload &generate_mfr_classic_auth_on_sam_key(json &data);
+    Payload &generate_mfr_classic_read_blocks(json &data);
+    Payload &generate_mfr_classic_write_blocks(json &data);
+    Payload &generate_mfr_classic_get_counter(json &data);
+    Payload &generate_mfr_classic_set_counter(json &data);
+    Payload &generate_mfr_classic_modify_counter(json &data);
+    Payload &generate_mfr_classic_copy_counter(json &data);
+    Payload &generate_mfr_classic_commit_counter(json &data);
+    Payload &generate_mfr_classic_bulk_operation(json &data);
 
     // Service
     Payload &generate_prepare_update(json &data);

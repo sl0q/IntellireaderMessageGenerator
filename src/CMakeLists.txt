@@ -21,12 +21,14 @@ file(GLOB COMMON_SRC CONFIGURE_DEPENDS "../proto_src/common/*.cc")
 file(GLOB MISC_SRC CONFIGURE_DEPENDS "../proto_src/intellireader/misc/*.cc")
 file(GLOB CONTACT_SRC CONFIGURE_DEPENDS "../proto_src/intellireader/contact/*.cc")
 file(GLOB CONTACTLESS_SRC CONFIGURE_DEPENDS "../proto_src/intellireader/contactless/*.cc")
+file(GLOB MIFARE_SRC CONFIGURE_DEPENDS "../proto_src/intellireader/mifare/**/*.cc" "../proto_src/intellireader/mifare/**/**/*.cc")
 file(GLOB SRV_SRC CONFIGURE_DEPENDS "../proto_src/intellireader/srv/*.cc")
 file(GLOB GUI_SRC CONFIGURE_DEPENDS "../proto_src/intellireader/gui/*.cc")
 
 # set(SRCS main.cpp MainFrame.cpp)
 set(SRCS App.cpp MainFrame.cpp messageCreator.cpp checksum.cpp payload.cpp msg.cpp
-    ../proto_src/intellireader/commands6.pb.cc
+    ../proto_src/intellireader/commands7.pb.cc
+    # ../proto_src/intellireader/commands6.pb.cc
     # ../proto_src/intellireader/commands5.pb.cc
     # ../proto_src/intellireader/commands4.pb.cc
     # ../proto_src/intellireader/commands3.pb.cc
@@ -35,6 +37,7 @@ set(SRCS App.cpp MainFrame.cpp messageCreator.cpp checksum.cpp payload.cpp msg.c
     ${MISC_SRC}
     ${CONTACT_SRC}
     ${CONTACTLESS_SRC}
+    ${MIFARE_SRC}
     ${SRV_SRC}
     ${GUI_SRC}
     )

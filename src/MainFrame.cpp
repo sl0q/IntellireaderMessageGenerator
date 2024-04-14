@@ -11,10 +11,10 @@ MainFrame::MainFrame(const wxString &title) : wxFrame(nullptr, wxID_ANY, title)
     wxPanel *panel = new wxPanel(this);
 
     wxStaticText *inputPathST = new wxStaticText(panel, wxID_ANY, "Input file path:", wxPoint(50, 25), wxDefaultSize);
-    this->inputPathTC = new wxTextCtrl(panel, wxID_ANY, "/home/inf/Projects/message_creator_window/input/serialising_gui.json", wxPoint(50, 50), wxSize(300, -1));
+    this->inputPathTC = new wxTextCtrl(panel, wxID_ANY, "/home/inf/Projects/message_creator_window/input/serialising_mifare_classic.json", wxPoint(50, 50), wxSize(300, -1));
 
     wxStaticText *outputPathST = new wxStaticText(panel, wxID_ANY, "Output file path:", wxPoint(50, 75), wxDefaultSize);
-    this->outputPathTC = new wxTextCtrl(panel, wxID_ANY, "/home/inf/Projects/message_creator_window/output/output_gui_messages.txt", wxPoint(50, 100), wxSize(300, -1));
+    this->outputPathTC = new wxTextCtrl(panel, wxID_ANY, "/home/inf/Projects/message_creator_window/output/output_mifare_classic_messages.txt", wxPoint(50, 100), wxSize(300, -1));
 
     wxButton *generateB = new wxButton(panel, wxID_ANY, "Generate", wxPoint(75, 150));
     generateB->Bind(wxEVT_BUTTON, &MainFrame::OnClickGenerateButton, this);
