@@ -1,0 +1,175 @@
+{
+    "messages":
+    [
+        {   
+            "title": "Mifare Plus Authentication on Clear Key",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "mfr_plus_auth_on_clear_key",
+            "data":
+            {
+                "keyType":
+                {
+                    "sectorKey":
+                    {
+                        "sectorNumber": 0,
+                        "sectorKeyType": "TYPE_A"
+                    }
+                },
+                "clearKey": "\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff",
+                "securityLevel": "SL3",
+                "diversificationInput": "diverseaavaa input bytes"
+            }
+        },
+        {   
+            "title": "Mifare Plus Authentication on SAM AV2",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 2,
+            "command": "mfr_plus_auth_on_sam_key",
+            "data":
+            {
+                "keyType":
+                {
+                    "sectorKey":
+                    {
+                        "sectorNumber": 0,
+                        "sectorKeyType": "TYPE_A"
+                    }
+                },
+                "av2Args":
+                {
+                    "slot": "SAM3_SLOT",
+                    "keyNumber": 25
+                },
+                "securityLevel": "SL3",
+                "diversificationInput": "diverseaavaa input bytes"
+            }
+        },
+        {   
+            "title": "Mifare Plus Read Data Blocks",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 3,
+            "command": "mfr_plus_read_blocks",
+            "data":
+            {
+                "startBlock": 0,
+                "blockCount": 3
+            }
+        },
+        {   
+            "title": "Mifare Plus Write Data Blocks",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 4,
+            "command": "mfr_plus_write_blocks",
+            "data":
+            {
+                "startBlock": 1,
+                "data": "\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\x09\\x0a\\x0b\\x0c\\x0d\\x0e\\x0f\\x10\\x11\\x12\\x13\\x14\\x15\\x16\\x17\\x18\\x19\\x1a\\x1b\\x1c\\x1d\\x1e\\x1f"
+            }
+        },
+        {   
+            "title": "Mifare Plus Get Counter Value",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 5,
+            "command": "mfr_plus_get_counter",
+            "data":
+            {
+                "srcBlock": 1
+            }
+        },
+        {   
+            "title": "Mifare Plus Set Counter Value",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 6,
+            "command": "mfr_plus_set_counter",
+            "data":
+            {
+                "dstBlock": 1,
+                "value": -100
+            }
+        },
+        {   
+            "title": "Mifare Plus Modify Counter Value",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 7,
+            "command": "mfr_plus_modify_counter",
+            "data":
+            {
+                "srcBlock": 1,
+                "operand": 1,
+                "dstBlock": 1
+            }
+        },
+        {   
+            "title": "Mifare Plus Copy Counter Value",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 8,
+            "command": "mfr_plus_copy_counter",
+            "data":
+            {
+                "srcBlock": 1,
+                "dstBlock": 2
+            }
+        },
+        {   
+            "title": "Mifare Plus Commit Counter Value",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 9,
+            "command": "mfr_plus_commit_counter",
+            "data":
+            {
+                "dstBlock": 2
+            }
+        },
+        {   
+            "title": "Mifare Plus Bulk operation",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 10,
+            "command": "mfr_plus_bulk_operation",
+            "data":
+            {
+                "operations": 
+                [
+                    {
+                        "authOnClearKey": 
+                        {
+                            "keyType": {
+                                "sectorKey": {
+                                    "sectorNumber": 0,
+                                    "sectorKeyType": "TYPE_A"
+                                }
+                            },
+                            "clearKey": "\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff\\xff",
+                            "securityLevel": "SL3",
+                            "diversificationInput": "diverseaavaa input bytes"
+                        }
+                    },
+                    {
+                        "writeBlocks":
+                        {
+                            "startBlock": 1,
+                            "data": "\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\x09\\x0a\\x0b\\x0c\\x0d\\x0e\\x0f\\x10\\x11\\x12\\x13\\x14\\x15\\x16\\x17\\x18\\x19\\x1a\\x1b\\x1c\\x1d\\x1e\\x1f"
+                        }
+                    },
+                    {
+                        "readBlocks":
+                        {
+                            "startBlock": 0,
+                            "blockCount": 3
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

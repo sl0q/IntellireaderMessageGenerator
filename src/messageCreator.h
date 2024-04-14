@@ -70,6 +70,10 @@ private:
     // ContactlessLevel2
     Payload &generate_perform_transaction(json &data);
 
+    // Mifare
+    void parse_key_type(json &keyTypeJson, mifare::plus::key_type::KeyType &keyType);
+    void parse_av2_args(json &av2ArgsJson, mifare::av2::args::AuthenticationArguments &av2Args);
+
     // Mifare classic
     Payload &generate_mfr_classic_auth_on_clear_key(json &data);
     Payload &generate_mfr_classic_auth_on_sam_key(json &data);
@@ -81,6 +85,18 @@ private:
     Payload &generate_mfr_classic_copy_counter(json &data);
     Payload &generate_mfr_classic_commit_counter(json &data);
     Payload &generate_mfr_classic_bulk_operation(json &data);
+
+    // Mifare plus
+    Payload &generate_mfr_plus_auth_on_clear_key(json &data);
+    Payload &generate_mfr_plus_auth_on_sam_key(json &data);
+    Payload &generate_mfr_plus_read_blocks(json &data);
+    Payload &generate_mfr_plus_write_blocks(json &data);
+    Payload &generate_mfr_plus_get_counter(json &data);
+    Payload &generate_mfr_plus_set_counter(json &data);
+    Payload &generate_mfr_plus_modify_counter(json &data);
+    Payload &generate_mfr_plus_copy_counter(json &data);
+    Payload &generate_mfr_plus_commit_counter(json &data);
+    Payload &generate_mfr_plus_bulk_operation(json &data);
 
     // Service
     Payload &generate_prepare_update(json &data);
