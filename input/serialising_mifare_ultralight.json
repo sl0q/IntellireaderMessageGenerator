@@ -1,0 +1,147 @@
+{
+    "messages":
+    [
+        {   
+            "title": "Mifare Ultralight Read Pages",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "mfr_ul_read_pages",
+            "data":
+            {
+                "startAddress": 4,
+                "pageCount": 4
+            }
+        },
+        {   
+            "title": "Mifare Ultralight Write Pages",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 2,
+            "command": "mfr_ul_write_pages",
+            "data":
+            {
+                "startAddress": 4,
+                "data": "\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\x09\\x0a\\x0b\\x0c\\x0d\\x0e\\x0f\\x10\\x11\\x12\\x13\\x14\\x15\\x16\\x17\\x18\\x19\\x1a\\x1b\\x1c\\x1d\\x1e\\x1f"
+            }
+        },
+        {   
+            "title": "Mifare Ultralight EV1 Get Counter Value",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 3,
+            "command": "mfr_ul_get_counter",
+            "data":
+            {
+                "counterNumber": "FIRST"
+            }
+        },
+        {   
+            "title": "Mifare Ultralight EV1 Increment Counter",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 4,
+            "command": "mfr_ul_increment_counter",
+            "data":
+            {
+                "counterNumber": "FIRST",
+                "operand": 1
+            }
+        },
+        {   
+            "title": "Mifare Ultralight EV1 Get Version",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 5,
+            "command": "mfr_ul_get_version"
+        },
+        {   
+            "title": "Mifare Ultralight Bulk operation",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 6,
+            "command": "mfr_ul_bulk_operation",
+            "data":
+            {
+                "operations":
+                [
+                    {
+                        "writePages":
+                        {
+                            "startAddress": 4,
+                            "data":"\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\x09\\x0a\\x0b\\x0c\\x0d\\x0e\\x0f\\x10\\x11\\x12\\x13\\x14\\x15\\x16\\x17\\x18\\x19\\x1a\\x1b\\x1c\\x1d\\x1e\\x1f"
+                        }
+                    },
+                    {
+                        "readPages": 
+                        {
+                            "startAddress": 4,
+                            "pageCount": 4
+                        }
+                    },
+                    {
+                        "readPages":
+                        {
+                            "startAddress": 8,
+                            "pageCount": 4
+                        }
+                    }
+                ]
+            }
+        },
+        {   
+            "title": "Mifare Ultralight-C 3DES Authentication on Clear Key",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 7,
+            "command": "mfr_ul_auth_on_clear_key",
+            "data":
+            {
+                "clearKey": "IEMKAERB!NACUOYF"
+            }
+        },
+        {   
+            "title": "Mifare Ultralight-C 3DES Authentication on Key from SAM AV2/AV3",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 8,
+            "command": "mfr_ul_auth_on_sam_key",
+            "data":
+            {
+                "av2Args":
+                { 
+                    "slot": "SAM3_SLOT",
+                    "keyNumber": 27
+                },
+                "diversificationInput": "div input bytes"
+            }
+        },
+        {   
+            "title": "Mifare Ultralight EV1 Password-based Authentication on Clear Password",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 9,
+            "command": "mfr_ul_auth_clear_password",
+            "data":
+            {
+                "password": "\\xff\\xff\\xff\\xff"
+            }
+        },
+        {   
+            "title": "Mifare Ultralight EV1 Password-based Authentication on Key from the SAM AV3",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 10,
+            "command": "mfr_ul_auth_sam_password",
+            "data":
+            {
+                "av3Args":
+                {
+                    "slot": "SAM3_SLOT",
+                    "keyNumber": 28
+                },
+                "diversificationInput": "div input bytes"
+            }
+        }
+    ]
+}

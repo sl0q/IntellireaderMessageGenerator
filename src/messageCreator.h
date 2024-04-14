@@ -72,7 +72,7 @@ private:
 
     // Mifare
     void parse_key_type(json &keyTypeJson, mifare::plus::key_type::KeyType &keyType);
-    void parse_av2_args(json &av2ArgsJson, mifare::av2::args::AuthenticationArguments &av2Args);
+    void parse_av_args(json &av2ArgsJson, mifare::av2::args::AuthenticationArguments &av2Args);
 
     // Mifare classic
     Payload &generate_mfr_classic_auth_on_clear_key(json &data);
@@ -102,6 +102,18 @@ private:
     Payload &generate_av2_authenticate_host(json &data);
     Payload &generate_av2_unlock(json &data);
     Payload &generate_av2_change_keyentry(json &data);
+
+    // Mifare ultralight
+    Payload &generate_mfr_ul_read_pages(json &data);
+    Payload &generate_mfr_ul_write_pages(json &data);
+    Payload &generate_mfr_ul_get_counter(json &data);
+    Payload &generate_mfr_ul_increment_counter(json &data);
+    Payload &generate_mfr_ul_get_version(json &data);
+    Payload &generate_mfr_ul_bulk_operation(json &data);
+    Payload &generate_mfr_ul_auth_on_clear_key(json &data);
+    Payload &generate_mfr_ul_auth_on_sam_key(json &data);
+    Payload &generate_mfr_ul_auth_clear_password(json &data);
+    Payload &generate_mfr_ul_auth_sam_password(json &data);
 
     // Service
     Payload &generate_prepare_update(json &data);
