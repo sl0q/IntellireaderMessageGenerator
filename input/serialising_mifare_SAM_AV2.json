@@ -1,0 +1,95 @@
+{
+    "messages":
+    [
+        {   
+            "title": "Mifare SAM AV2 Host Authentication",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "av2_authenticate_host",
+            "data":
+            {
+                "args":
+                {
+                    "slot": "SAM3_SLOT",
+                    "keyNumber": 0
+                },
+                "key": "keybytestring"
+            }
+        },
+        {   
+            "title": "Unlock Mifare SAM AV2",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 2,
+            "command": "av2_unlock",
+            "data":
+            {
+                "args":
+                {
+                    "slot": "SAM2_SLOT",
+                    "keyNumber": 1
+                },
+                "key": "\\xe5\\x71\\x80\\x0c\\x72\\x30\\x99\\x60\\x35\\x04\\x23\\x9a\\x26\\xc4\\xb6\\x41"
+            }
+        },
+        {   
+            "title": "Change Key Entry in Mifare SAM AV2 (mifare classic)",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 3,
+            "command": "av2_change_keyentry",
+            "data":
+            {
+                "slot": "SAM3_SLOT",
+                "keyentryNumber": 10,
+                "keyVersion": 0,
+                "mifare":
+                {
+                    "key_a":
+                    {
+                        "key": "\\xff\\xff\\xff\\xff\\xff\\xff"
+                    },
+                    "key_b":
+                    {
+                        "key": "\\xff\\xff\\xff\\xff\\xff\\xff"
+                    }
+                }
+            }
+        },
+        {   
+            "title": "Change Key Entry in Mifare SAM AV2 (mifare plus)",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 4,
+            "command": "av2_change_keyentry",
+            "data":
+            {
+                "slot": "SAM3_SLOT",
+                "keyentryNumber": 10,
+                "keyVersion": 0,
+                "plus":
+                {
+                    "key": "\\xe5\\x71\\x80\\x0c\\x72\\x30\\x99\\x60\\x35\\x04\\x23\\x9a\\x26\\xc4\\xb6\\x41"
+                }
+            }
+        },
+        {   
+            "title": "Change Key Entry in Mifare SAM AV2 (mifare plus)",
+            "moduleID": 5,
+            "messageType": 1,
+            "messageID": 5,
+            "command": "av2_change_keyentry",
+            "data":
+            {
+                "slot": "SAM3_SLOT",
+                "keyentryNumber": 10,
+                "keyVersion": 0,
+                "ultralight_c":
+                {
+                    "key": "\\xe5\\x71\\x80\\x0c\\x72\\x30\\x99\\x60\\x35\\x04\\x23\\x9a\\x26\\xc4\\xb6\\x41"
+                }
+            }
+        }
+    ]
+}

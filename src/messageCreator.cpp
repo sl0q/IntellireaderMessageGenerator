@@ -258,6 +258,15 @@ void MessageCreator::generate_messages(const std::string inputFilePath, const st
                 payload = &generate_mfr_plus_commit_counter(data);
             else if ("mfr_plus_bulk_operation" == command)
                 payload = &generate_mfr_plus_bulk_operation(data);
+
+            // sam_av2
+            else if ("av2_authenticate_host" == command)
+                payload = &generate_av2_authenticate_host(data);
+            else if ("av2_unlock" == command)
+                payload = &generate_av2_unlock(data);
+            else if ("av2_change_keyentry" == command)
+                payload = &generate_av2_change_keyentry(data);
+
             break;
         }
         case 7: //  Service
@@ -1645,6 +1654,183 @@ Payload &MessageCreator::generate_mfr_plus_bulk_operation(json &data)
             newOperation->set_allocated_commit_counter(newCommitCounter);
         }
     }
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_av2_authenticate_host(json &data)
+{
+    if (data.count("args") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:args] field in [" + this->inputFilePath + "] file.");
+
+    auto av2AuthHost = new mifare::av2::host_auth::AuthenticateHost();
+    dynamic_cast<Mifare *>(this->msg)->set_allocated_av2_authenticate_host(av2AuthHost);
+
+    auto newAv2Args = new mifare::av2::args::AuthenticationArguments();
+    parse_av2_args(data["args"], *newAv2Args);
+    av2AuthHost->set_allocated_args(newAv2Args);
+
+    if (data.count("key"))
+        av2AuthHost->set_key(data.at("key").get<std::string>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_av2_unlock(json &data)
+{
+    if (data.count("args") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:args] field in [" + this->inputFilePath + "] file.");
+
+    auto unlock = new mifare::av2::unlock::Unlock();
+    dynamic_cast<Mifare *>(this->msg)->set_allocated_av2_unlock(unlock);
+
+    auto newAv2Args = new mifare::av2::args::AuthenticationArguments();
+    parse_av2_args(data["args"], *newAv2Args);
+    unlock->set_allocated_args(newAv2Args);
+
+    if (data.count("key"))
+        unlock->set_key(data.at("key").get<std::string>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_av2_change_keyentry(json &data)
+{
+    if (data.count("slot") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:slot] field in [" + this->inputFilePath + "] file.");
+    if (data.count("keyentryNumber") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:keyentryNumber] field in [" + this->inputFilePath + "] file.");
+    if (data.count("keyVersion") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:keyVersion] field in [" + this->inputFilePath + "] file.");
+
+    auto av2ChangeKeyentry = new mifare::av2::change_keyentry::ChangeKeyEntry();
+    dynamic_cast<Mifare *>(this->msg)->set_allocated_av2_change_keyentry(av2ChangeKeyentry);
+
+    auto newSlot = new contact::card_slot::CardSlot();
+    if (!contact::card_slot::CardSlot_Parse(data.at("slot").get<std::string>(), newSlot))
+        throw std::invalid_argument("Failed to parse [slot] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data::slot].");
+    av2ChangeKeyentry->set_slot(*newSlot);
+
+    av2ChangeKeyentry->set_keyentry_number(data.at("keyentryNumber").get<uint32_t>());
+
+    av2ChangeKeyentry->set_key_version(data.at("keyVersion").get<uint32_t>());
+
+    if (data.count("channel"))
+    {
+        mifare::av2::channel::Channel newChannel;
+        if (!mifare::av2::channel::Channel_Parse(data.at("channel").get<std::string>(), &newChannel))
+            throw std::invalid_argument("Failed to parse [channel] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:channel].");
+        av2ChangeKeyentry->set_channel(newChannel);
+    }
+
+    if (data.count("keyPosition"))
+    {
+        mifare::av2::key_position::KeyPosition newKeyPosition;
+        if (!mifare::av2::key_position::KeyPosition_Parse(data.at("keyPosition").get<std::string>(), &newKeyPosition))
+            throw std::invalid_argument("Failed to parse [keyPosition] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:keyPosition].");
+        av2ChangeKeyentry->set_key_position(newKeyPosition);
+    }
+
+    if (data.count("mifare"))
+    {
+        if (data["mifare"].count("key_a") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:mifare:key_a] field in [" + this->inputFilePath + "] file.");
+        if (data["mifare"].count("key_b") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:mifare:key_b] field in [" + this->inputFilePath + "] file.");
+
+        if (data["mifare"]["key_a"].count("key") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:mifare:key_a:key] field in [" + this->inputFilePath + "] file.");
+        if (data["mifare"]["key_b"].count("key") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:mifare:key_b:key] field in [" + this->inputFilePath + "] file.");
+
+        auto newMifare = new mifare::av2::change_keyentry::MifareKeyEntry();
+
+        auto newKeyA = new mifare::av2::change_keyentry::MifareKey();
+        newKeyA->set_key(data["mifare"]["key_a"].at("key").get<std::string>());
+
+        if (data["mifare"]["key_a"].count("diversification_key"))
+        {
+            if (data["mifare"]["key_a"]["diversification_key"].count("number") == 0)
+                throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:mifare:key_a:diversification_key:number] field in [" + this->inputFilePath + "] file.");
+            if (data["mifare"]["key_a"]["diversification_key"].count("version") == 0)
+                throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:mifare:key_a:diversification_key:version] field in [" + this->inputFilePath + "] file.");
+
+            auto newDiverKey = new mifare::av2::change_keyentry::MifareKey_DiversificationKey();
+            newDiverKey->set_number(data["mifare"]["key_a"]["diversification_key"].at("number").get<uint32_t>());
+            newDiverKey->set_version(data["mifare"]["key_a"]["diversification_key"].at("version").get<uint32_t>());
+
+            newKeyA->set_allocated_diversification_key(newDiverKey);
+        }
+
+        newMifare->set_allocated_key_a(newKeyA);
+
+        auto newKeyB = new mifare::av2::change_keyentry::MifareKey();
+        newKeyB->set_key(data["mifare"]["key_b"].at("key").get<std::string>());
+
+        if (data["mifare"]["key_b"].count("diversification_key"))
+        {
+            if (data["mifare"]["key_b"]["diversification_key"].count("number") == 0)
+                throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:mifare:key_b:diversification_key:number] field in [" + this->inputFilePath + "] file.");
+            if (data["mifare"]["key_b"]["diversification_key"].count("version") == 0)
+                throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:mifare:key_b:diversification_key:version] field in [" + this->inputFilePath + "] file.");
+
+            auto newDiverKey = new mifare::av2::change_keyentry::MifareKey_DiversificationKey();
+            newDiverKey->set_number(data["mifare"]["key_b"]["diversification_key"].at("number").get<uint32_t>());
+            newDiverKey->set_version(data["mifare"]["key_b"]["diversification_key"].at("version").get<uint32_t>());
+
+            newKeyB->set_allocated_diversification_key(newDiverKey);
+        }
+
+        newMifare->set_allocated_key_b(newKeyB);
+
+        av2ChangeKeyentry->set_allocated_mifare(newMifare);
+    }
+    else if (data.count("plus"))
+    {
+        if (data["plus"].count("key") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:plus:key] field in [" + this->inputFilePath + "] file.");
+
+        auto newPlus = new mifare::av2::change_keyentry::PlusKeyEntry();
+        newPlus->set_key(data["plus"].at("key").get<std::string>());
+
+        av2ChangeKeyentry->set_allocated_plus(newPlus);
+    }
+    else if (data.count("ultralight_c"))
+    {
+        if (data["ultralight_c"].count("key") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:ultralight_c:key] field in [" + this->inputFilePath + "] file.");
+
+        auto newUltra = new mifare::av2::change_keyentry::UltralightCKeyEntry();
+        newUltra->set_key(data["ultralight_c"].at("key").get<std::string>());
+
+        av2ChangeKeyentry->set_allocated_ultralight_c(newUltra);
+    }
+    else
+        throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:keyEntry:???] field in [" + this->inputFilePath + "] file.");
 
     std::cout << this->msg->DebugString() << std::endl;
 

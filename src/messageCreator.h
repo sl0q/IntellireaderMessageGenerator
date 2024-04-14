@@ -98,6 +98,11 @@ private:
     Payload &generate_mfr_plus_commit_counter(json &data);
     Payload &generate_mfr_plus_bulk_operation(json &data);
 
+    // Mifare SAM_AV2
+    Payload &generate_av2_authenticate_host(json &data);
+    Payload &generate_av2_unlock(json &data);
+    Payload &generate_av2_change_keyentry(json &data);
+
     // Service
     Payload &generate_prepare_update(json &data);
     Payload &generate_update_block(json &data);
