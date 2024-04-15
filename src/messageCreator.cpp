@@ -5,6 +5,9 @@ void append_big_endian(std::vector<uint8_t> &buf, uint16_t n)
     buf.push_back((n & 0xFF00) >> 8); // добавили старший разряд
     buf.push_back(n & 0xFF);          // добавили младший разряд
 }
+// MessageCreator::MessageCreator()
+// {
+// }
 
 MessageCreator::MessageCreator(std::string inputJsonPath)
 {
@@ -25,6 +28,113 @@ MessageCreator::MessageCreator(std::string inputJsonPath)
     {
         this->jsonMessages.push_back(message);
     }
+
+    //  Filling up commandTable
+
+    //  Miscelaneous
+    this->commandTable["set_leds_state"] = std::bind(&MessageCreator::generate_set_leds_state, this, std::placeholders::_1);
+    this->commandTable["reboot_device"] = std::bind(&MessageCreator::generate_reboot_device, this, std::placeholders::_1);
+    this->commandTable["read_device_info"] = std::bind(&MessageCreator::generate_read_device_info, this, std::placeholders::_1);
+    this->commandTable["make_sound"] = std::bind(&MessageCreator::generate_make_sound, this, std::placeholders::_1);
+    this->commandTable["get_echo"] = std::bind(&MessageCreator::generate_get_echo, this, std::placeholders::_1);
+    this->commandTable["get_device_status"] = std::bind(&MessageCreator::generate_get_device_status, this, std::placeholders::_1);
+    this->commandTable["get_device_statistic"] = std::bind(&MessageCreator::generate_get_device_statistic, this, std::placeholders::_1);
+    this->commandTable["change_lan_settings"] = std::bind(&MessageCreator::generate_change_lan_settings, this, std::placeholders::_1);
+    this->commandTable["change_baudrate"] = std::bind(&MessageCreator::generate_change_baudrate, this, std::placeholders::_1);
+
+    /*******************************************************************************************************************************************/
+
+    //  ContactLevel1
+    this->commandTable["power_on_card"] = std::bind(&MessageCreator::generate_power_on, this, std::placeholders::_1);
+    this->commandTable["power_off_card"] = std::bind(&MessageCreator::generate_power_off, this, std::placeholders::_1);
+    this->commandTable["transmit_apdu"] = std::bind(&MessageCreator::generate_transmit_apdu, this, std::placeholders::_1);
+
+    /*******************************************************************************************************************************************/
+
+    // ContactlessLevel1
+    this->commandTable["poll_for_token"] = std::bind(&MessageCreator::generate_poll_for_token, this, std::placeholders::_1);
+    this->commandTable["emv_removal"] = std::bind(&MessageCreator::generate_emv_removal, this, std::placeholders::_1);
+    this->commandTable["tsv_bit_array"] = std::bind(&MessageCreator::generate_tsv_bit_array, this, std::placeholders::_1);
+    this->commandTable["iso14443_4_command"] = std::bind(&MessageCreator::generate_iso14443_4_command, this, std::placeholders::_1);
+    this->commandTable["power_off_field"] = std::bind(&MessageCreator::generate_power_off_field, this, std::placeholders::_1);
+    this->commandTable["request_for_ats"] = std::bind(&MessageCreator::generate_request_for_ats, this, std::placeholders::_1);
+
+    /*******************************************************************************************************************************************/
+
+    // ContactlessLevel2
+    this->commandTable["perform_transaction"] = std::bind(&MessageCreator::generate_perform_transaction, this, std::placeholders::_1);
+
+    /*******************************************************************************************************************************************/
+
+    //  Mifare
+    //      classic
+    this->commandTable["mfr_classic_auth_on_clear_key"] = std::bind(&MessageCreator::generate_mfr_classic_auth_on_clear_key, this, std::placeholders::_1);
+    this->commandTable["mfr_classic_auth_on_sam_key"] = std::bind(&MessageCreator::generate_mfr_classic_auth_on_sam_key, this, std::placeholders::_1);
+    this->commandTable["mfr_classic_read_blocks"] = std::bind(&MessageCreator::generate_mfr_classic_read_blocks, this, std::placeholders::_1);
+    this->commandTable["mfr_classic_write_blocks"] = std::bind(&MessageCreator::generate_mfr_classic_write_blocks, this, std::placeholders::_1);
+    this->commandTable["mfr_classic_get_counter"] = std::bind(&MessageCreator::generate_mfr_classic_get_counter, this, std::placeholders::_1);
+    this->commandTable["mfr_classic_set_counter"] = std::bind(&MessageCreator::generate_mfr_classic_set_counter, this, std::placeholders::_1);
+    this->commandTable["mfr_classic_modify_counter"] = std::bind(&MessageCreator::generate_mfr_classic_modify_counter, this, std::placeholders::_1);
+    this->commandTable["mfr_classic_copy_counter"] = std::bind(&MessageCreator::generate_mfr_classic_copy_counter, this, std::placeholders::_1);
+    this->commandTable["mfr_classic_commit_counter"] = std::bind(&MessageCreator::generate_mfr_classic_commit_counter, this, std::placeholders::_1);
+    this->commandTable["mfr_classic_bulk_operation"] = std::bind(&MessageCreator::generate_mfr_classic_bulk_operation, this, std::placeholders::_1);
+
+    //      plus
+    this->commandTable["mfr_plus_auth_on_clear_key"] = std::bind(&MessageCreator::generate_mfr_plus_auth_on_clear_key, this, std::placeholders::_1);
+    this->commandTable["mfr_plus_auth_on_sam_key"] = std::bind(&MessageCreator::generate_mfr_plus_auth_on_sam_key, this, std::placeholders::_1);
+    this->commandTable["mfr_plus_read_blocks"] = std::bind(&MessageCreator::generate_mfr_plus_read_blocks, this, std::placeholders::_1);
+    this->commandTable["mfr_plus_write_blocks"] = std::bind(&MessageCreator::generate_mfr_plus_write_blocks, this, std::placeholders::_1);
+    this->commandTable["mfr_plus_get_counter"] = std::bind(&MessageCreator::generate_mfr_plus_get_counter, this, std::placeholders::_1);
+    this->commandTable["mfr_plus_set_counter"] = std::bind(&MessageCreator::generate_mfr_plus_set_counter, this, std::placeholders::_1);
+    this->commandTable["mfr_plus_modify_counter"] = std::bind(&MessageCreator::generate_mfr_plus_modify_counter, this, std::placeholders::_1);
+    this->commandTable["mfr_plus_copy_counter"] = std::bind(&MessageCreator::generate_mfr_plus_copy_counter, this, std::placeholders::_1);
+    this->commandTable["mfr_plus_commit_counter"] = std::bind(&MessageCreator::generate_mfr_plus_commit_counter, this, std::placeholders::_1);
+    this->commandTable["mfr_plus_bulk_operation"] = std::bind(&MessageCreator::generate_mfr_plus_bulk_operation, this, std::placeholders::_1);
+
+    //      sam_av2
+    this->commandTable["av2_authenticate_host"] = std::bind(&MessageCreator::generate_av2_authenticate_host, this, std::placeholders::_1);
+    this->commandTable["av2_unlock"] = std::bind(&MessageCreator::generate_av2_unlock, this, std::placeholders::_1);
+    this->commandTable["av2_change_keyentry"] = std::bind(&MessageCreator::generate_av2_change_keyentry, this, std::placeholders::_1);
+
+    //      ultralight
+    this->commandTable["mfr_ul_read_pages"] = std::bind(&MessageCreator::generate_mfr_ul_read_pages, this, std::placeholders::_1);
+    this->commandTable["mfr_ul_write_pages"] = std::bind(&MessageCreator::generate_mfr_ul_write_pages, this, std::placeholders::_1);
+    this->commandTable["mfr_ul_get_counter"] = std::bind(&MessageCreator::generate_mfr_ul_get_counter, this, std::placeholders::_1);
+    this->commandTable["mfr_ul_increment_counter"] = std::bind(&MessageCreator::generate_mfr_ul_increment_counter, this, std::placeholders::_1);
+    this->commandTable["mfr_ul_get_version"] = std::bind(&MessageCreator::generate_mfr_ul_get_version, this, std::placeholders::_1);
+    this->commandTable["mfr_ul_bulk_operation"] = std::bind(&MessageCreator::generate_mfr_ul_bulk_operation, this, std::placeholders::_1);
+    this->commandTable["mfr_ul_auth_on_clear_key"] = std::bind(&MessageCreator::generate_mfr_ul_auth_on_clear_key, this, std::placeholders::_1);
+    this->commandTable["mfr_ul_auth_on_sam_key"] = std::bind(&MessageCreator::generate_mfr_ul_auth_on_sam_key, this, std::placeholders::_1);
+    this->commandTable["mfr_ul_auth_clear_password"] = std::bind(&MessageCreator::generate_mfr_ul_auth_clear_password, this, std::placeholders::_1);
+    this->commandTable["mfr_ul_auth_sam_password"] = std::bind(&MessageCreator::generate_mfr_ul_auth_sam_password, this, std::placeholders::_1);
+
+    //      extended
+    // this->commandTable["mfr_classic_auth_on_clear_key"] = std::bind(&MessageCreator::generate_mfr_classic_auth_on_clear_key, this, std::placeholders::_1);
+    // this->commandTable["mfr_classic_auth_on_sam_key"] = std::bind(&MessageCreator::generate_mfr_classic_auth_on_sam_key, this, std::placeholders::_1);
+    // this->commandTable["mfr_classic_read_blocks"] = std::bind(&MessageCreator::generate_mfr_classic_read_blocks, this, std::placeholders::_1);
+
+    /*******************************************************************************************************************************************/
+
+    //  Service
+    this->commandTable["prepare_update"] = std::bind(&MessageCreator::generate_prepare_update, this, std::placeholders::_1);
+    this->commandTable["update_block"] = std::bind(&MessageCreator::generate_update_block, this, std::placeholders::_1);
+    this->commandTable["apply_update"] = std::bind(&MessageCreator::generate_apply_update, this, std::placeholders::_1);
+    this->commandTable["rollback_update"] = std::bind(&MessageCreator::generate_rollback_update, this, std::placeholders::_1);
+    this->commandTable["get_diagnostic"] = std::bind(&MessageCreator::generate_get_diagnostic, this, std::placeholders::_1);
+    this->commandTable["prepare_for_config"] = std::bind(&MessageCreator::generate_prepare_for_config, this, std::placeholders::_1);
+    this->commandTable["upload_block_of_config"] = std::bind(&MessageCreator::generate_upload_block_of_config, this, std::placeholders::_1);
+    this->commandTable["check_configuration"] = std::bind(&MessageCreator::generate_check_configuration, this, std::placeholders::_1);
+
+    /*******************************************************************************************************************************************/
+
+    // GUI
+    this->commandTable["show_screen"] = std::bind(&MessageCreator::generate_show_screen, this, std::placeholders::_1);
+    this->commandTable["input_dialog"] = std::bind(&MessageCreator::generate_input_dialog, this, std::placeholders::_1);
+    this->commandTable["menu_dialog"] = std::bind(&MessageCreator::generate_menu_dialog, this, std::placeholders::_1);
+    this->commandTable["draw_bitmap"] = std::bind(&MessageCreator::generate_draw_bitmap, this, std::placeholders::_1);
+    this->commandTable["slideshow"] = std::bind(&MessageCreator::generate_slideshow, this, std::placeholders::_1);
+
+    /*******************************************************************************************************************************************/
 }
 
 MessageCreator::~MessageCreator()
@@ -154,191 +264,19 @@ void MessageCreator::generate_messages(const std::string inputFilePath, const st
         if (newJsonMessage.count("checksumValid") != 0)
             isChecksumValid = newJsonMessage.at("checksumValid").get<bool>();
 
-        Payload *payload = nullptr;
-
-        switch (this->moduleID)
+        auto it = this->commandTable.find(command);
+        if (it != commandTable.end())
         {
-        case 1: // Miscellaneous
-        {
-            if ("set_leds_state" == command)
-                payload = &generate_set_leds_state(data);
-            else if ("reboot_device" == command)
-                payload = &generate_reboot_device(data);
-            else if ("read_device_info" == command)
-                payload = &generate_read_device_info(data);
-            else if ("make_sound" == command)
-                payload = &generate_make_sound(data);
-            else if ("get_echo" == command)
-                payload = &generate_get_echo(data);
-            else if ("get_device_status" == command)
-                payload = &generate_get_device_status(data);
-            else if ("get_device_statistic" == command)
-                payload = &generate_get_device_statistic(data);
-            else if ("change_lan_settings" == command)
-                payload = &generate_change_lan_settings(data);
-            else if ("change_baudrate" == command)
-                payload = &generate_change_baudrate(data);
-
-            break;
-        }
-        case 2: //  ContactLevel1
-        {
-            if ("power_on_card" == command)
-                payload = &generate_power_on(data);
-            else if ("power_off_card" == command)
-                payload = &generate_power_off(data);
-            else if ("transmit_apdu" == command)
-                payload = &generate_transmit_apdu(data);
-            break;
-        }
-        case 3: //  ContactlessLevel1
-        {
-            if ("poll_for_token" == command)
-                payload = &generate_poll_for_token(data);
-            else if ("emv_removal" == command)
-                payload = &generate_emv_removal(data);
-            else if ("tsv_bit_array" == command)
-                payload = &generate_tsv_bit_array(data);
-            else if ("iso14443_4_command" == command)
-                payload = &generate_iso14443_4_command(data);
-            else if ("power_off_field" == command)
-                payload = &generate_power_off_field(data);
-            else if ("request_for_ats" == command)
-                payload = &generate_request_for_ats(data);
-            break;
-        }
-        case 4: //  ContactlessLevel2
-        {
-            if ("perform_transaction")
-                payload = &generate_perform_transaction(data);
-            break;
-        }
-        case 5: //  Mifare
-        {
-            // classic
-            if ("mfr_classic_auth_on_clear_key" == command)
-                payload = &generate_mfr_classic_auth_on_clear_key(data);
-            else if ("mfr_classic_auth_on_sam_key" == command)
-                payload = &generate_mfr_classic_auth_on_sam_key(data);
-            else if ("mfr_classic_read_blocks" == command)
-                payload = &generate_mfr_classic_read_blocks(data);
-            else if ("mfr_classic_write_blocks" == command)
-                payload = &generate_mfr_classic_write_blocks(data);
-            else if ("mfr_classic_get_counter" == command)
-                payload = &generate_mfr_classic_get_counter(data);
-            else if ("mfr_classic_set_counter" == command)
-                payload = &generate_mfr_classic_set_counter(data);
-            else if ("mfr_classic_modify_counter" == command)
-                payload = &generate_mfr_classic_modify_counter(data);
-            else if ("mfr_classic_copy_counter" == command)
-                payload = &generate_mfr_classic_copy_counter(data);
-            else if ("mfr_classic_commit_counter" == command)
-                payload = &generate_mfr_classic_commit_counter(data);
-            else if ("mfr_classic_bulk_operation" == command)
-                payload = &generate_mfr_classic_bulk_operation(data);
-
-            // plus
-            else if ("mfr_plus_auth_on_clear_key" == command)
-                payload = &generate_mfr_plus_auth_on_clear_key(data);
-            else if ("mfr_plus_auth_on_sam_key" == command)
-                payload = &generate_mfr_plus_auth_on_sam_key(data);
-            else if ("mfr_plus_read_blocks" == command)
-                payload = &generate_mfr_plus_read_blocks(data);
-            else if ("mfr_plus_write_blocks" == command)
-                payload = &generate_mfr_plus_write_blocks(data);
-            else if ("mfr_plus_get_counter" == command)
-                payload = &generate_mfr_plus_get_counter(data);
-            else if ("mfr_plus_set_counter" == command)
-                payload = &generate_mfr_plus_set_counter(data);
-            else if ("mfr_plus_modify_counter" == command)
-                payload = &generate_mfr_plus_modify_counter(data);
-            else if ("mfr_plus_copy_counter" == command)
-                payload = &generate_mfr_plus_copy_counter(data);
-            else if ("mfr_plus_commit_counter" == command)
-                payload = &generate_mfr_plus_commit_counter(data);
-            else if ("mfr_plus_bulk_operation" == command)
-                payload = &generate_mfr_plus_bulk_operation(data);
-
-            // sam_av2
-            else if ("av2_authenticate_host" == command)
-                payload = &generate_av2_authenticate_host(data);
-            else if ("av2_unlock" == command)
-                payload = &generate_av2_unlock(data);
-            else if ("av2_change_keyentry" == command)
-                payload = &generate_av2_change_keyentry(data);
-
-            // ultralight
-            else if ("mfr_ul_read_pages" == command)
-                payload = &generate_mfr_ul_read_pages(data);
-            else if ("mfr_ul_write_pages" == command)
-                payload = &generate_mfr_ul_write_pages(data);
-            else if ("mfr_ul_get_counter" == command)
-                payload = &generate_mfr_ul_get_counter(data);
-            else if ("mfr_ul_increment_counter" == command)
-                payload = &generate_mfr_ul_increment_counter(data);
-            else if ("mfr_ul_get_version" == command)
-                payload = &generate_mfr_ul_get_version(data);
-            else if ("mfr_ul_bulk_operation" == command)
-                payload = &generate_mfr_ul_bulk_operation(data);
-            else if ("mfr_ul_auth_on_clear_key" == command)
-                payload = &generate_mfr_ul_auth_on_clear_key(data);
-            else if ("mfr_ul_auth_on_sam_key" == command)
-                payload = &generate_mfr_ul_auth_on_sam_key(data);
-            else if ("mfr_ul_auth_clear_password" == command)
-                payload = &generate_mfr_ul_auth_clear_password(data);
-            else if ("mfr_ul_auth_sam_password" == command)
-                payload = &generate_mfr_ul_auth_sam_password(data);
-
-            break;
-        }
-        case 7: //  Service
-        {
-            if ("prepare_update" == command)
-                payload = &generate_prepare_update(data);
-            else if ("update_block" == command)
-                payload = &generate_update_block(data);
-            else if ("apply_update" == command)
-                payload = &generate_apply_update(data);
-            else if ("rollback_update" == command)
-                payload = &generate_rollback_update(data);
-            else if ("get_diagnostic" == command)
-                payload = &generate_get_diagnostic(data);
-            else if ("prepare_for_config" == command)
-                payload = &generate_prepare_for_config(data);
-            else if ("upload_block_of_config" == command)
-                payload = &generate_upload_block_of_config(data);
-            else if ("check_configuration" == command)
-                payload = &generate_check_configuration(data);
-            break;
-        }
-        case 10: //  GUI
-        {
-            if ("show_screen" == command)
-                payload = &generate_show_screen(data);
-            else if ("input_dialog" == command)
-                payload = &generate_input_dialog(data);
-            else if ("menu_dialog" == command)
-                payload = &generate_menu_dialog(data);
-            else if ("draw_bitmap" == command)
-                payload = &generate_draw_bitmap(data);
-            else if ("slideshow" == command)
-                payload = &generate_slideshow(data);
-            break;
-        }
-        default:
-            break;
-        }
-
-        if (payload)
-        {
-            auto m = compose_message(*payload, isChecksumValid);
+            Payload payload = it->second(data); //  calling a generate_XXX method
+            auto m = compose_message(payload, isChecksumValid);
             file << m.getDataAsString() << "\n"
                  << bs64::base64_encode(m.getData()) << "\n"
                  << m.getDebugString() << "\n\n";
-
-            delete payload;
             file << "###################################################################\n\n\n";
         }
+
+        else
+            std::cout << "Unknown command [" << command << "]" << std::endl;
 
         file.close();
 

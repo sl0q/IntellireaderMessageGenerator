@@ -26,11 +26,16 @@
 #define IR "IR"
 
 using json = nlohmann::json;
+// typedef Payload &(*MessageCreator::)
 
 class MessageCreator
 {
+    // using CommandFunction = Payload &(MessageCreator::*)(json &);
+    // typedef Payload &(*CommandFunction)(json &); // function pointer type
+
 private:
     std::string inputFilePath;
+    std::unordered_map<std::string, std::function<Payload &(json &)>> commandTable;
     int messageIndex;
     uint8_t moduleID;
     uint8_t messageType;
@@ -140,6 +145,7 @@ private:
     Payload &generate_slideshow(json &data);
 
 public:
+    // MessageCreator();
     MessageCreator(std::string inputJsonPath);
     ~MessageCreator();
     void generate_messages(const std::string inputFilePath, const std::string outputFilePath);
