@@ -107,7 +107,7 @@ struct TableStruct_commands7_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[7]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[8]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -129,6 +129,9 @@ extern GuiDefaultTypeInternal _Gui_default_instance_;
 class Mifare;
 class MifareDefaultTypeInternal;
 extern MifareDefaultTypeInternal _Mifare_default_instance_;
+class MifareExtended;
+class MifareExtendedDefaultTypeInternal;
+extern MifareExtendedDefaultTypeInternal _MifareExtended_default_instance_;
 class Miscellaneous;
 class MiscellaneousDefaultTypeInternal;
 extern MiscellaneousDefaultTypeInternal _Miscellaneous_default_instance_;
@@ -141,6 +144,7 @@ template<> ::ContactlessLevel1* Arena::CreateMaybeMessage<::ContactlessLevel1>(A
 template<> ::ContactlessLevel2* Arena::CreateMaybeMessage<::ContactlessLevel2>(Arena*);
 template<> ::Gui* Arena::CreateMaybeMessage<::Gui>(Arena*);
 template<> ::Mifare* Arena::CreateMaybeMessage<::Mifare>(Arena*);
+template<> ::MifareExtended* Arena::CreateMaybeMessage<::MifareExtended>(Arena*);
 template<> ::Miscellaneous* Arena::CreateMaybeMessage<::Miscellaneous>(Arena*);
 template<> ::Service* Arena::CreateMaybeMessage<::Service>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
@@ -2406,6 +2410,202 @@ class Gui :
     ::gui::draw_bitmap::DrawBitmap* draw_bitmap_;
     ::gui::slideshow::Slideshow* slideshow_;
   } gui_cmd_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 _oneof_case_[1];
+
+  friend struct ::TableStruct_commands7_2eproto;
+};
+// -------------------------------------------------------------------
+
+class MifareExtended :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:MifareExtended) */ {
+ public:
+  MifareExtended();
+  virtual ~MifareExtended();
+
+  MifareExtended(const MifareExtended& from);
+  MifareExtended(MifareExtended&& from) noexcept
+    : MifareExtended() {
+    *this = ::std::move(from);
+  }
+
+  inline MifareExtended& operator=(const MifareExtended& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline MifareExtended& operator=(MifareExtended&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const MifareExtended& default_instance();
+
+  enum MifareCmdCase {
+    kMfrClassicReadSectors = 1,
+    kMfrClassicWriteSectors = 2,
+    kMfrGetVersion = 3,
+    MIFARE_CMD_NOT_SET = 0,
+  };
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const MifareExtended* internal_default_instance() {
+    return reinterpret_cast<const MifareExtended*>(
+               &_MifareExtended_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    7;
+
+  friend void swap(MifareExtended& a, MifareExtended& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(MifareExtended* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline MifareExtended* New() const final {
+    return CreateMaybeMessage<MifareExtended>(nullptr);
+  }
+
+  MifareExtended* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<MifareExtended>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const MifareExtended& from);
+  void MergeFrom(const MifareExtended& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(MifareExtended* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "MifareExtended";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_commands7_2eproto);
+    return ::descriptor_table_commands7_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kMfrClassicReadSectorsFieldNumber = 1,
+    kMfrClassicWriteSectorsFieldNumber = 2,
+    kMfrGetVersionFieldNumber = 3,
+  };
+  // optional .mifare.classic.sector.read.ReadSectors mfr_classic_read_sectors = 1;
+  bool has_mfr_classic_read_sectors() const;
+  private:
+  bool _internal_has_mfr_classic_read_sectors() const;
+  public:
+  void clear_mfr_classic_read_sectors();
+  const ::mifare::classic::sector::read::ReadSectors& mfr_classic_read_sectors() const;
+  ::mifare::classic::sector::read::ReadSectors* release_mfr_classic_read_sectors();
+  ::mifare::classic::sector::read::ReadSectors* mutable_mfr_classic_read_sectors();
+  void set_allocated_mfr_classic_read_sectors(::mifare::classic::sector::read::ReadSectors* mfr_classic_read_sectors);
+  private:
+  const ::mifare::classic::sector::read::ReadSectors& _internal_mfr_classic_read_sectors() const;
+  ::mifare::classic::sector::read::ReadSectors* _internal_mutable_mfr_classic_read_sectors();
+  public:
+
+  // optional .mifare.classic.sector.write.WriteSectors mfr_classic_write_sectors = 2;
+  bool has_mfr_classic_write_sectors() const;
+  private:
+  bool _internal_has_mfr_classic_write_sectors() const;
+  public:
+  void clear_mfr_classic_write_sectors();
+  const ::mifare::classic::sector::write::WriteSectors& mfr_classic_write_sectors() const;
+  ::mifare::classic::sector::write::WriteSectors* release_mfr_classic_write_sectors();
+  ::mifare::classic::sector::write::WriteSectors* mutable_mfr_classic_write_sectors();
+  void set_allocated_mfr_classic_write_sectors(::mifare::classic::sector::write::WriteSectors* mfr_classic_write_sectors);
+  private:
+  const ::mifare::classic::sector::write::WriteSectors& _internal_mfr_classic_write_sectors() const;
+  ::mifare::classic::sector::write::WriteSectors* _internal_mutable_mfr_classic_write_sectors();
+  public:
+
+  // optional .mifare.generic.get_version.GetVersion mfr_get_version = 3;
+  bool has_mfr_get_version() const;
+  private:
+  bool _internal_has_mfr_get_version() const;
+  public:
+  void clear_mfr_get_version();
+  const ::mifare::generic::get_version::GetVersion& mfr_get_version() const;
+  ::mifare::generic::get_version::GetVersion* release_mfr_get_version();
+  ::mifare::generic::get_version::GetVersion* mutable_mfr_get_version();
+  void set_allocated_mfr_get_version(::mifare::generic::get_version::GetVersion* mfr_get_version);
+  private:
+  const ::mifare::generic::get_version::GetVersion& _internal_mfr_get_version() const;
+  ::mifare::generic::get_version::GetVersion* _internal_mutable_mfr_get_version();
+  public:
+
+  void clear_mifare_cmd();
+  MifareCmdCase mifare_cmd_case() const;
+  // @@protoc_insertion_point(class_scope:MifareExtended)
+ private:
+  class _Internal;
+  void set_has_mfr_classic_read_sectors();
+  void set_has_mfr_classic_write_sectors();
+  void set_has_mfr_get_version();
+
+  inline bool has_mifare_cmd() const;
+  inline void clear_has_mifare_cmd();
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  union MifareCmdUnion {
+    MifareCmdUnion() {}
+    ::mifare::classic::sector::read::ReadSectors* mfr_classic_read_sectors_;
+    ::mifare::classic::sector::write::WriteSectors* mfr_classic_write_sectors_;
+    ::mifare::generic::get_version::GetVersion* mfr_get_version_;
+  } mifare_cmd_;
   ::PROTOBUF_NAMESPACE_ID::uint32 _oneof_case_[1];
 
   friend struct ::TableStruct_commands7_2eproto;
@@ -5500,9 +5700,156 @@ inline void Gui::clear_has_gui_cmd() {
 inline Gui::GuiCmdCase Gui::gui_cmd_case() const {
   return Gui::GuiCmdCase(_oneof_case_[0]);
 }
+// -------------------------------------------------------------------
+
+// MifareExtended
+
+// optional .mifare.classic.sector.read.ReadSectors mfr_classic_read_sectors = 1;
+inline bool MifareExtended::_internal_has_mfr_classic_read_sectors() const {
+  return mifare_cmd_case() == kMfrClassicReadSectors;
+}
+inline bool MifareExtended::has_mfr_classic_read_sectors() const {
+  return _internal_has_mfr_classic_read_sectors();
+}
+inline void MifareExtended::set_has_mfr_classic_read_sectors() {
+  _oneof_case_[0] = kMfrClassicReadSectors;
+}
+inline ::mifare::classic::sector::read::ReadSectors* MifareExtended::release_mfr_classic_read_sectors() {
+  // @@protoc_insertion_point(field_release:MifareExtended.mfr_classic_read_sectors)
+  if (_internal_has_mfr_classic_read_sectors()) {
+    clear_has_mifare_cmd();
+      ::mifare::classic::sector::read::ReadSectors* temp = mifare_cmd_.mfr_classic_read_sectors_;
+    mifare_cmd_.mfr_classic_read_sectors_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::mifare::classic::sector::read::ReadSectors& MifareExtended::_internal_mfr_classic_read_sectors() const {
+  return _internal_has_mfr_classic_read_sectors()
+      ? *mifare_cmd_.mfr_classic_read_sectors_
+      : *reinterpret_cast< ::mifare::classic::sector::read::ReadSectors*>(&::mifare::classic::sector::read::_ReadSectors_default_instance_);
+}
+inline const ::mifare::classic::sector::read::ReadSectors& MifareExtended::mfr_classic_read_sectors() const {
+  // @@protoc_insertion_point(field_get:MifareExtended.mfr_classic_read_sectors)
+  return _internal_mfr_classic_read_sectors();
+}
+inline ::mifare::classic::sector::read::ReadSectors* MifareExtended::_internal_mutable_mfr_classic_read_sectors() {
+  if (!_internal_has_mfr_classic_read_sectors()) {
+    clear_mifare_cmd();
+    set_has_mfr_classic_read_sectors();
+    mifare_cmd_.mfr_classic_read_sectors_ = CreateMaybeMessage< ::mifare::classic::sector::read::ReadSectors >(
+        GetArenaNoVirtual());
+  }
+  return mifare_cmd_.mfr_classic_read_sectors_;
+}
+inline ::mifare::classic::sector::read::ReadSectors* MifareExtended::mutable_mfr_classic_read_sectors() {
+  // @@protoc_insertion_point(field_mutable:MifareExtended.mfr_classic_read_sectors)
+  return _internal_mutable_mfr_classic_read_sectors();
+}
+
+// optional .mifare.classic.sector.write.WriteSectors mfr_classic_write_sectors = 2;
+inline bool MifareExtended::_internal_has_mfr_classic_write_sectors() const {
+  return mifare_cmd_case() == kMfrClassicWriteSectors;
+}
+inline bool MifareExtended::has_mfr_classic_write_sectors() const {
+  return _internal_has_mfr_classic_write_sectors();
+}
+inline void MifareExtended::set_has_mfr_classic_write_sectors() {
+  _oneof_case_[0] = kMfrClassicWriteSectors;
+}
+inline ::mifare::classic::sector::write::WriteSectors* MifareExtended::release_mfr_classic_write_sectors() {
+  // @@protoc_insertion_point(field_release:MifareExtended.mfr_classic_write_sectors)
+  if (_internal_has_mfr_classic_write_sectors()) {
+    clear_has_mifare_cmd();
+      ::mifare::classic::sector::write::WriteSectors* temp = mifare_cmd_.mfr_classic_write_sectors_;
+    mifare_cmd_.mfr_classic_write_sectors_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::mifare::classic::sector::write::WriteSectors& MifareExtended::_internal_mfr_classic_write_sectors() const {
+  return _internal_has_mfr_classic_write_sectors()
+      ? *mifare_cmd_.mfr_classic_write_sectors_
+      : *reinterpret_cast< ::mifare::classic::sector::write::WriteSectors*>(&::mifare::classic::sector::write::_WriteSectors_default_instance_);
+}
+inline const ::mifare::classic::sector::write::WriteSectors& MifareExtended::mfr_classic_write_sectors() const {
+  // @@protoc_insertion_point(field_get:MifareExtended.mfr_classic_write_sectors)
+  return _internal_mfr_classic_write_sectors();
+}
+inline ::mifare::classic::sector::write::WriteSectors* MifareExtended::_internal_mutable_mfr_classic_write_sectors() {
+  if (!_internal_has_mfr_classic_write_sectors()) {
+    clear_mifare_cmd();
+    set_has_mfr_classic_write_sectors();
+    mifare_cmd_.mfr_classic_write_sectors_ = CreateMaybeMessage< ::mifare::classic::sector::write::WriteSectors >(
+        GetArenaNoVirtual());
+  }
+  return mifare_cmd_.mfr_classic_write_sectors_;
+}
+inline ::mifare::classic::sector::write::WriteSectors* MifareExtended::mutable_mfr_classic_write_sectors() {
+  // @@protoc_insertion_point(field_mutable:MifareExtended.mfr_classic_write_sectors)
+  return _internal_mutable_mfr_classic_write_sectors();
+}
+
+// optional .mifare.generic.get_version.GetVersion mfr_get_version = 3;
+inline bool MifareExtended::_internal_has_mfr_get_version() const {
+  return mifare_cmd_case() == kMfrGetVersion;
+}
+inline bool MifareExtended::has_mfr_get_version() const {
+  return _internal_has_mfr_get_version();
+}
+inline void MifareExtended::set_has_mfr_get_version() {
+  _oneof_case_[0] = kMfrGetVersion;
+}
+inline ::mifare::generic::get_version::GetVersion* MifareExtended::release_mfr_get_version() {
+  // @@protoc_insertion_point(field_release:MifareExtended.mfr_get_version)
+  if (_internal_has_mfr_get_version()) {
+    clear_has_mifare_cmd();
+      ::mifare::generic::get_version::GetVersion* temp = mifare_cmd_.mfr_get_version_;
+    mifare_cmd_.mfr_get_version_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::mifare::generic::get_version::GetVersion& MifareExtended::_internal_mfr_get_version() const {
+  return _internal_has_mfr_get_version()
+      ? *mifare_cmd_.mfr_get_version_
+      : *reinterpret_cast< ::mifare::generic::get_version::GetVersion*>(&::mifare::generic::get_version::_GetVersion_default_instance_);
+}
+inline const ::mifare::generic::get_version::GetVersion& MifareExtended::mfr_get_version() const {
+  // @@protoc_insertion_point(field_get:MifareExtended.mfr_get_version)
+  return _internal_mfr_get_version();
+}
+inline ::mifare::generic::get_version::GetVersion* MifareExtended::_internal_mutable_mfr_get_version() {
+  if (!_internal_has_mfr_get_version()) {
+    clear_mifare_cmd();
+    set_has_mfr_get_version();
+    mifare_cmd_.mfr_get_version_ = CreateMaybeMessage< ::mifare::generic::get_version::GetVersion >(
+        GetArenaNoVirtual());
+  }
+  return mifare_cmd_.mfr_get_version_;
+}
+inline ::mifare::generic::get_version::GetVersion* MifareExtended::mutable_mfr_get_version() {
+  // @@protoc_insertion_point(field_mutable:MifareExtended.mfr_get_version)
+  return _internal_mutable_mfr_get_version();
+}
+
+inline bool MifareExtended::has_mifare_cmd() const {
+  return mifare_cmd_case() != MIFARE_CMD_NOT_SET;
+}
+inline void MifareExtended::clear_has_mifare_cmd() {
+  _oneof_case_[0] = MIFARE_CMD_NOT_SET;
+}
+inline MifareExtended::MifareCmdCase MifareExtended::mifare_cmd_case() const {
+  return MifareExtended::MifareCmdCase(_oneof_case_[0]);
+}
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

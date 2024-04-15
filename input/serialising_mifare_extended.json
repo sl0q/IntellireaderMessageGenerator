@@ -1,0 +1,109 @@
+{
+    "messages":
+    [
+        {   
+            "title": "Mifare Classic Read Multiple Sectors",
+            "moduleID": 17,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "mfr_classic_read_sectors",
+            "data":
+            {
+                "sectors":
+                [
+                    {
+                        "samKey": {
+                            "sectorNumber": 7,
+                            "keyType": "TYPE_A",
+                            "av2Args": {
+                                "slot": "SAM3_SLOT",
+                                "keyNumber": 3
+                            }
+                        }
+                    },
+                    {
+                        "samKey": {
+                            "sectorNumber": 8,
+                            "keyType": "TYPE_A",
+                            "av2Args": {
+                                "slot": "SAM3_SLOT",
+                                "keyNumber": 1
+                            }
+                        }
+                    },
+                    {
+                        "clearKey": {
+                            "sectorNumber": 9,
+                            "keyType": "TYPE_A",
+                            "clearKey": "\\xff\\xff\\xff\\xff\\xff\\xff"
+                        }
+                    }
+                ]
+            }
+        },
+        {   
+            "title": "Mifare Classic Write Multiple Sectors",
+            "moduleID": 17,
+            "messageType": 1,
+            "messageID": 2,
+            "command": "mfr_classic_write_sectors",
+            "data":
+            {
+                "sectors": [
+                    {
+                        "sector": {
+                            "samKey": {
+                                "sectorNumber": 7,
+                                "keyType": "TYPE_B",
+                                "av2Args": {
+                                    "slot": "SAM3_SLOT",
+                                    "keyNumber": 4
+                                }
+                            }
+                        },
+                        "blocks": {
+                            "startBlock": 0,
+                            "data": "\\x11\\x11\\x11\\x11\\x11\\x11\\x11\\x11\\x11\\x11\\x11\\x11\\x11\\x11\\x11\\x11"
+                        }
+                    },
+                    {
+                        "sector": {
+                            "samKey": {
+                                "sectorNumber": 8,
+                                "keyType": "TYPE_B",
+                                "av2Args": {
+                                    "slot": "SAM3_SLOT",
+                                    "keyNumber": 2
+                                }
+                            }
+                        },
+                        "blocks": {
+                            "startBlock": 0,
+                            "data": "\\x22\\x22\\x22\\x22\\x22\\x22\\x22\\x22\\x22\\x22\\x22\\x22\\x22\\x22\\x22\\x22"
+                        }
+                    },
+                    {
+                        "sector": {
+                            "clearKey": {
+                                "sectorNumber": 9,
+                                "keyType": "TYPE_A",
+                                "clearKey": "\\xff\\xff\\xff\\xff\\xff\\xff"
+                            }
+                        },
+                        "blocks": {
+                            "startBlock": 0,
+                            "data": "\\x33\\x33\\x33\\x33\\x33\\x33\\x33\\x33\\x33\\x33\\x33\\x33\\x33\\x33\\x33\\x33"
+                        }
+                    }
+                ]
+            }
+        },
+        {   
+            "title": "Read Product Version Info of Generic Mifare Card",
+            "moduleID": 17,
+            "messageType": 1,
+            "messageID": 3,
+            "command": "mfr_get_version"
+        }
+    ]
+}

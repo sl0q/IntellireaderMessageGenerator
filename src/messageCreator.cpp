@@ -109,9 +109,9 @@ MessageCreator::MessageCreator(std::string inputJsonPath)
     this->commandTable["mfr_ul_auth_sam_password"] = std::bind(&MessageCreator::generate_mfr_ul_auth_sam_password, this, std::placeholders::_1);
 
     //      extended
-    // this->commandTable["mfr_classic_auth_on_clear_key"] = std::bind(&MessageCreator::generate_mfr_classic_auth_on_clear_key, this, std::placeholders::_1);
-    // this->commandTable["mfr_classic_auth_on_sam_key"] = std::bind(&MessageCreator::generate_mfr_classic_auth_on_sam_key, this, std::placeholders::_1);
-    // this->commandTable["mfr_classic_read_blocks"] = std::bind(&MessageCreator::generate_mfr_classic_read_blocks, this, std::placeholders::_1);
+    this->commandTable["mfr_classic_read_sectors"] = std::bind(&MessageCreator::generate_mfr_classic_read_sectors, this, std::placeholders::_1);
+    this->commandTable["mfr_classic_write_sectors"] = std::bind(&MessageCreator::generate_mfr_classic_write_sectors, this, std::placeholders::_1);
+    this->commandTable["mfr_get_version"] = std::bind(&MessageCreator::generate_mfr_get_version, this, std::placeholders::_1);
 
     /*******************************************************************************************************************************************/
 
@@ -198,8 +198,8 @@ google::protobuf::Message *MessageCreator::find_protobuf_module(uint8_t moduleID
         // case 0x10:
         //     return new Turnstile();
 
-        // case 0x11:
-        //     return new MifareExtended();
+    case 0x11:
+        return new MifareExtended();
 
         // case 0x12:
         //     return new Troika();
@@ -917,6 +917,61 @@ void MessageCreator::parse_av_args(json &av2ArgsJson, mifare::av2::args::Authent
             throw std::invalid_argument("Failed to parse [channel] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:av2Args:channel].");
         av2Args.set_channel(newChannel);
     }
+}
+
+void MessageCreator::parse_sector(json &sectorJson, mifare::classic::sector::sector::Sector &sector, int iSector)
+{
+    if (sectorJson.count("clearKey"))
+    {
+        if (sectorJson["clearKey"].count("sectorNumber") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:sectors:" + std::to_string(iSector) + ":clearKey:sectorNumber] field in [" + this->inputFilePath + "] file.");
+        if (sectorJson["clearKey"].count("keyType") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:sectors:" + std::to_string(iSector) + ":clearKey:keyType] field in [" + this->inputFilePath + "] file.");
+        if (sectorJson["clearKey"].count("clearKey") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:sectors:" + std::to_string(iSector) + ":clearKey:clearKey] field in [" + this->inputFilePath + "] file.");
+
+        auto newClearKey = new mifare::classic::auth::ClearKey();
+
+        newClearKey->set_sector_number(sectorJson["clearKey"].at("sectorNumber").get<uint32_t>());
+
+        mifare::classic::auth::KeyType newKeyType;
+        if (!mifare::classic::auth::KeyType_Parse(sectorJson["clearKey"].at("keyType").get<std::string>(), &newKeyType))
+            throw std::invalid_argument("Failed to parse [keyType] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:sectors:" + std::to_string(iSector) + ":clearKey:keyType].");
+        newClearKey->set_key_type(newKeyType);
+
+        newClearKey->set_clear_key(sectorJson["clearKey"].at("clearKey").get<std::string>());
+
+        sector.set_allocated_clear_key(newClearKey);
+    }
+    else if (sectorJson.count("samKey"))
+    {
+        if (sectorJson["samKey"].count("sectorNumber") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:sectors:" + std::to_string(iSector) + ":samKey:sectorNumber] field in [" + this->inputFilePath + "] file.");
+        if (sectorJson["samKey"].count("keyType") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:sectors:" + std::to_string(iSector) + ":samKey:keyType] field in [" + this->inputFilePath + "] file.");
+        if (sectorJson["samKey"].count("av2Args") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:sectors:" + std::to_string(iSector) + ":samKey:av2Args] field in [" + this->inputFilePath + "] file.");
+
+        auto newSamKey = new mifare::classic::auth::SamKey();
+
+        newSamKey->set_sector_number(sectorJson["samKey"].at("sectorNumber").get<uint32_t>());
+
+        mifare::classic::auth::KeyType newKeyType;
+        if (!mifare::classic::auth::KeyType_Parse(sectorJson["samKey"].at("keyType").get<std::string>(), &newKeyType))
+            throw std::invalid_argument("Failed to parse [keyType] parameter correctly in [messages:" + std::to_string(this->messageIndex) + ":data:sectors:" + std::to_string(iSector) + ":samKey:keyType].");
+        newSamKey->set_key_type(newKeyType);
+
+        auto newAv2Args = new mifare::av2::args::AuthenticationArguments();
+        parse_av_args(sectorJson["samKey"]["av2Args"], *newAv2Args);
+        newSamKey->set_allocated_av2_args(newAv2Args);
+
+        sector.set_allocated_sam_key(newSamKey);
+
+        if (sectorJson["samKey"].count("needDiversification"))
+            newSamKey->set_need_diversification(sectorJson["samKey"].at("needDiversification").get<bool>());
+    }
+    else
+        throw ex::JsonParsingException("Could not find oneof [messages:" + std::to_string(this->messageIndex) + ":data:sectors:" + std::to_string(iSector) + ":???] field in [" + this->inputFilePath + "] file.");
 }
 
 Payload &MessageCreator::generate_mfr_classic_auth_on_clear_key(json &data)
@@ -2118,6 +2173,95 @@ Payload &MessageCreator::generate_mfr_ul_auth_sam_password(json &data)
 
     if (data.count("diversificationInput"))
         authSamPassword->set_diversification_input(data.at("diversificationInput").get<std::string>());
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_mfr_classic_read_sectors(json &data)
+{
+    if (data.count("sectors") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:sectors] field in [" + this->inputFilePath + "] file.");
+
+    auto readSectors = new mifare::classic::sector::read::ReadSectors();
+    dynamic_cast<MifareExtended *>(this->msg)->set_allocated_mfr_classic_read_sectors(readSectors);
+
+    int iSector = 0;
+    for (auto &sectorJson : data["sectors"])
+    {
+        auto newSector = readSectors->add_sectors();
+        parse_sector(sectorJson, *newSector, iSector);
+        ++iSector;
+    }
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_mfr_classic_write_sectors(json &data)
+{
+    if (data.count("sectors") == 0)
+        throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:sectors] field in [" + this->inputFilePath + "] file.");
+
+    auto writeSectors = new mifare::classic::sector::write::WriteSectors();
+    dynamic_cast<MifareExtended *>(this->msg)->set_allocated_mfr_classic_write_sectors(writeSectors);
+
+    int iSector = 0;
+    for (auto &sectorJson : data["sectors"])
+    {
+        if (sectorJson.count("sector") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:sectors:" + std::to_string(iSector) + ":sector] field in [" + this->inputFilePath + "] file.");
+        if (sectorJson.count("blocks") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:sectors:" + std::to_string(iSector) + ":blocks] field in [" + this->inputFilePath + "] file.");
+
+        if (sectorJson["blocks"].count("startBlock") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:sectors:" + std::to_string(iSector) + ":blocks:startBlock] field in [" + this->inputFilePath + "] file.");
+        if (sectorJson["blocks"].count("data") == 0)
+            throw ex::JsonParsingException("Could not find required [messages:" + std::to_string(this->messageIndex) + ":data:sectors:" + std::to_string(iSector) + ":blocks:data] field in [" + this->inputFilePath + "] file.");
+
+        auto newSector = writeSectors->add_sectors();
+
+        auto newSectorSector = new mifare::classic::sector::sector::Sector();
+        parse_sector(sectorJson["sector"], *newSectorSector, iSector);
+        newSector->set_allocated_sector(newSectorSector);
+
+        auto newBlocks = new mifare::classic::write::WriteBlocks();
+        newBlocks->set_start_block(sectorJson["blocks"].at("startBlock").get<uint32_t>());
+        newBlocks->set_data(sectorJson["blocks"].at("data").get<std::string>());
+        newSector->set_allocated_blocks(newBlocks);
+
+        ++iSector;
+    }
+
+    std::cout << this->msg->DebugString() << std::endl;
+
+    std::vector<uint8_t> buf;
+    buf.resize(this->msg->ByteSizeLong());
+    int buf_size = buf.size();
+    this->msg->SerializeToArray(buf.data(), buf_size);
+
+    Payload &generatedPayload = *(new Payload(this->msg->DebugString(), buf));
+    return generatedPayload;
+}
+
+Payload &MessageCreator::generate_mfr_get_version(json &data)
+{
+    auto getVersion = new mifare::generic::get_version::GetVersion();
+    dynamic_cast<MifareExtended *>(this->msg)->set_allocated_mfr_get_version(getVersion);
 
     std::cout << this->msg->DebugString() << std::endl;
 

@@ -41,7 +41,10 @@ extern PROTOBUF_INTERNAL_EXPORT_mifare_2fclassic_2fcounter_2fget_2eproto ::PROTO
 extern PROTOBUF_INTERNAL_EXPORT_mifare_2fclassic_2fcounter_2fmodify_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_ModifyCounter_mifare_2fclassic_2fcounter_2fmodify_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_mifare_2fclassic_2fcounter_2fset_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_SetCounter_mifare_2fclassic_2fcounter_2fset_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_mifare_2fclassic_2fread_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_ReadBlocks_mifare_2fclassic_2fread_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_mifare_2fclassic_2fsector_2fread_5fsector_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<1> scc_info_ReadSectors_mifare_2fclassic_2fsector_2fread_5fsector_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_mifare_2fclassic_2fsector_2fwrite_5fsector_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<1> scc_info_WriteSectors_mifare_2fclassic_2fsector_2fwrite_5fsector_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_mifare_2fclassic_2fwrite_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_WriteBlocks_mifare_2fclassic_2fwrite_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_mifare_2fgeneric_2fget_5fversion_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_GetVersion_mifare_2fgeneric_2fget_5fversion_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_mifare_2fplus_2fauth_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<1> scc_info_ClearKey_mifare_2fplus_2fauth_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_mifare_2fplus_2fauth_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<2> scc_info_SamKey_mifare_2fplus_2fauth_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_mifare_2fplus_2fbulk_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<1> scc_info_BulkOperation_mifare_2fplus_2fbulk_2eproto;
@@ -178,6 +181,13 @@ class GuiDefaultTypeInternal {
   const ::gui::draw_bitmap::DrawBitmap* draw_bitmap_;
   const ::gui::slideshow::Slideshow* slideshow_;
 } _Gui_default_instance_;
+class MifareExtendedDefaultTypeInternal {
+ public:
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<MifareExtended> _instance;
+  const ::mifare::classic::sector::read::ReadSectors* mfr_classic_read_sectors_;
+  const ::mifare::classic::sector::write::WriteSectors* mfr_classic_write_sectors_;
+  const ::mifare::generic::get_version::GetVersion* mfr_get_version_;
+} _MifareExtended_default_instance_;
 static void InitDefaultsscc_info_ContactLevel1_commands7_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -296,6 +306,23 @@ static void InitDefaultsscc_info_Mifare_commands7_2eproto() {
       &scc_info_ClearPassword_mifare_2fultralight_2fpassword_2eproto.base,
       &scc_info_SamPassword_mifare_2fultralight_2fpassword_2eproto.base,}};
 
+static void InitDefaultsscc_info_MifareExtended_commands7_2eproto() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::_MifareExtended_default_instance_;
+    new (ptr) ::MifareExtended();
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::MifareExtended::InitAsDefaultInstance();
+}
+
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<3> scc_info_MifareExtended_commands7_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 3, 0, InitDefaultsscc_info_MifareExtended_commands7_2eproto}, {
+      &scc_info_ReadSectors_mifare_2fclassic_2fsector_2fread_5fsector_2eproto.base,
+      &scc_info_WriteSectors_mifare_2fclassic_2fsector_2fwrite_5fsector_2eproto.base,
+      &scc_info_GetVersion_mifare_2fgeneric_2fget_5fversion_2eproto.base,}};
+
 static void InitDefaultsscc_info_Miscellaneous_commands7_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -344,7 +371,7 @@ static void InitDefaultsscc_info_Service_commands7_2eproto() {
       &scc_info_UploadBlock_srv_2fupload_5fconfig_2eproto.base,
       &scc_info_CheckConfiguration_srv_2fupload_5fconfig_2eproto.base,}};
 
-static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_commands7_2eproto[7];
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_commands7_2eproto[8];
 static constexpr ::PROTOBUF_NAMESPACE_ID::EnumDescriptor const** file_level_enum_descriptors_commands7_2eproto = nullptr;
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_commands7_2eproto = nullptr;
 
@@ -527,6 +554,18 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_commands7_2eproto::offsets[] P
   ~0u,
   ~0u,
   ~0u,
+  PROTOBUF_FIELD_OFFSET(::MifareExtended, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::MifareExtended, _internal_metadata_),
+  ~0u,  // no _extensions_
+  PROTOBUF_FIELD_OFFSET(::MifareExtended, _oneof_case_[0]),
+  ~0u,  // no _weak_field_map_
+  offsetof(::MifareExtendedDefaultTypeInternal, mfr_classic_read_sectors_),
+  offsetof(::MifareExtendedDefaultTypeInternal, mfr_classic_write_sectors_),
+  offsetof(::MifareExtendedDefaultTypeInternal, mfr_get_version_),
+  PROTOBUF_FIELD_OFFSET(::MifareExtended, mifare_cmd_),
+  ~0u,
+  ~0u,
+  ~0u,
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 15, sizeof(::Miscellaneous)},
@@ -536,6 +575,7 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOB
   { 122, 131, sizeof(::ContactLevel1)},
   { 134, 151, sizeof(::Service)},
   { 162, 173, sizeof(::Gui)},
+  { 178, 187, sizeof(::MifareExtended)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -546,6 +586,7 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::_ContactLevel1_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::_Service_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::_Gui_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::_MifareExtended_default_instance_),
 };
 
 const char descriptor_table_protodef_commands7_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
@@ -707,7 +748,13 @@ const char descriptor_table_protodef_commands7_2eproto[] PROTOBUF_SECTION_VARIAB
   "g.MenuDialogH\000\0222\n\013draw_bitmap\030\004 \001(\0132\033.gu"
   "i.draw_bitmap.DrawBitmapH\000\022-\n\tslideshow\030"
   "\005 \001(\0132\030.gui.slideshow.SlideshowH\000B\t\n\007gui"
-  "_cmd"
+  "_cmd\"\376\001\n\016MifareExtended\022K\n\030mfr_classic_r"
+  "ead_sectors\030\001 \001(\0132\'.mifare.classic.secto"
+  "r.read.ReadSectorsH\000\022N\n\031mfr_classic_writ"
+  "e_sectors\030\002 \001(\0132).mifare.classic.sector."
+  "write.WriteSectorsH\000\022A\n\017mfr_get_version\030"
+  "\003 \001(\0132&.mifare.generic.get_version.GetVe"
+  "rsionH\000B\014\n\nmifare_cmd"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_commands7_2eproto_deps[60] = {
   &::descriptor_table_contact_2fiso7816_5f4_2eproto,
@@ -771,22 +818,23 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor
   &::descriptor_table_srv_2fprotection_2eproto,
   &::descriptor_table_srv_2fupload_5fconfig_2eproto,
 };
-static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_commands7_2eproto_sccs[7] = {
+static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_commands7_2eproto_sccs[8] = {
   &scc_info_ContactLevel1_commands7_2eproto.base,
   &scc_info_ContactlessLevel1_commands7_2eproto.base,
   &scc_info_ContactlessLevel2_commands7_2eproto.base,
   &scc_info_Gui_commands7_2eproto.base,
   &scc_info_Mifare_commands7_2eproto.base,
+  &scc_info_MifareExtended_commands7_2eproto.base,
   &scc_info_Miscellaneous_commands7_2eproto.base,
   &scc_info_Service_commands7_2eproto.base,
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_commands7_2eproto_once;
 static bool descriptor_table_commands7_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_commands7_2eproto = {
-  &descriptor_table_commands7_2eproto_initialized, descriptor_table_protodef_commands7_2eproto, "commands7.proto", 6324,
-  &descriptor_table_commands7_2eproto_once, descriptor_table_commands7_2eproto_sccs, descriptor_table_commands7_2eproto_deps, 7, 60,
+  &descriptor_table_commands7_2eproto_initialized, descriptor_table_protodef_commands7_2eproto, "commands7.proto", 6581,
+  &descriptor_table_commands7_2eproto_once, descriptor_table_commands7_2eproto_sccs, descriptor_table_commands7_2eproto_deps, 8, 60,
   schemas, file_default_instances, TableStruct_commands7_2eproto::offsets,
-  file_level_metadata_commands7_2eproto, 7, file_level_enum_descriptors_commands7_2eproto, file_level_service_descriptors_commands7_2eproto,
+  file_level_metadata_commands7_2eproto, 8, file_level_enum_descriptors_commands7_2eproto, file_level_service_descriptors_commands7_2eproto,
 };
 
 // Force running AddDescriptors() at dynamic initialization time.
@@ -6669,6 +6717,407 @@ void Gui::InternalSwap(Gui* other) {
 }
 
 
+// ===================================================================
+
+void MifareExtended::InitAsDefaultInstance() {
+  ::_MifareExtended_default_instance_.mfr_classic_read_sectors_ = const_cast< ::mifare::classic::sector::read::ReadSectors*>(
+      ::mifare::classic::sector::read::ReadSectors::internal_default_instance());
+  ::_MifareExtended_default_instance_.mfr_classic_write_sectors_ = const_cast< ::mifare::classic::sector::write::WriteSectors*>(
+      ::mifare::classic::sector::write::WriteSectors::internal_default_instance());
+  ::_MifareExtended_default_instance_.mfr_get_version_ = const_cast< ::mifare::generic::get_version::GetVersion*>(
+      ::mifare::generic::get_version::GetVersion::internal_default_instance());
+}
+class MifareExtended::_Internal {
+ public:
+  using HasBits = decltype(std::declval<MifareExtended>()._has_bits_);
+  static const ::mifare::classic::sector::read::ReadSectors& mfr_classic_read_sectors(const MifareExtended* msg);
+  static const ::mifare::classic::sector::write::WriteSectors& mfr_classic_write_sectors(const MifareExtended* msg);
+  static const ::mifare::generic::get_version::GetVersion& mfr_get_version(const MifareExtended* msg);
+};
+
+const ::mifare::classic::sector::read::ReadSectors&
+MifareExtended::_Internal::mfr_classic_read_sectors(const MifareExtended* msg) {
+  return *msg->mifare_cmd_.mfr_classic_read_sectors_;
+}
+const ::mifare::classic::sector::write::WriteSectors&
+MifareExtended::_Internal::mfr_classic_write_sectors(const MifareExtended* msg) {
+  return *msg->mifare_cmd_.mfr_classic_write_sectors_;
+}
+const ::mifare::generic::get_version::GetVersion&
+MifareExtended::_Internal::mfr_get_version(const MifareExtended* msg) {
+  return *msg->mifare_cmd_.mfr_get_version_;
+}
+void MifareExtended::set_allocated_mfr_classic_read_sectors(::mifare::classic::sector::read::ReadSectors* mfr_classic_read_sectors) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaNoVirtual();
+  clear_mifare_cmd();
+  if (mfr_classic_read_sectors) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena = nullptr;
+    if (message_arena != submessage_arena) {
+      mfr_classic_read_sectors = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, mfr_classic_read_sectors, submessage_arena);
+    }
+    set_has_mfr_classic_read_sectors();
+    mifare_cmd_.mfr_classic_read_sectors_ = mfr_classic_read_sectors;
+  }
+  // @@protoc_insertion_point(field_set_allocated:MifareExtended.mfr_classic_read_sectors)
+}
+void MifareExtended::clear_mfr_classic_read_sectors() {
+  if (_internal_has_mfr_classic_read_sectors()) {
+    delete mifare_cmd_.mfr_classic_read_sectors_;
+    clear_has_mifare_cmd();
+  }
+}
+void MifareExtended::set_allocated_mfr_classic_write_sectors(::mifare::classic::sector::write::WriteSectors* mfr_classic_write_sectors) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaNoVirtual();
+  clear_mifare_cmd();
+  if (mfr_classic_write_sectors) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena = nullptr;
+    if (message_arena != submessage_arena) {
+      mfr_classic_write_sectors = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, mfr_classic_write_sectors, submessage_arena);
+    }
+    set_has_mfr_classic_write_sectors();
+    mifare_cmd_.mfr_classic_write_sectors_ = mfr_classic_write_sectors;
+  }
+  // @@protoc_insertion_point(field_set_allocated:MifareExtended.mfr_classic_write_sectors)
+}
+void MifareExtended::clear_mfr_classic_write_sectors() {
+  if (_internal_has_mfr_classic_write_sectors()) {
+    delete mifare_cmd_.mfr_classic_write_sectors_;
+    clear_has_mifare_cmd();
+  }
+}
+void MifareExtended::set_allocated_mfr_get_version(::mifare::generic::get_version::GetVersion* mfr_get_version) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaNoVirtual();
+  clear_mifare_cmd();
+  if (mfr_get_version) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena = nullptr;
+    if (message_arena != submessage_arena) {
+      mfr_get_version = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, mfr_get_version, submessage_arena);
+    }
+    set_has_mfr_get_version();
+    mifare_cmd_.mfr_get_version_ = mfr_get_version;
+  }
+  // @@protoc_insertion_point(field_set_allocated:MifareExtended.mfr_get_version)
+}
+void MifareExtended::clear_mfr_get_version() {
+  if (_internal_has_mfr_get_version()) {
+    delete mifare_cmd_.mfr_get_version_;
+    clear_has_mifare_cmd();
+  }
+}
+MifareExtended::MifareExtended()
+  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:MifareExtended)
+}
+MifareExtended::MifareExtended(const MifareExtended& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
+      _internal_metadata_(nullptr),
+      _has_bits_(from._has_bits_) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  clear_has_mifare_cmd();
+  switch (from.mifare_cmd_case()) {
+    case kMfrClassicReadSectors: {
+      _internal_mutable_mfr_classic_read_sectors()->::mifare::classic::sector::read::ReadSectors::MergeFrom(from._internal_mfr_classic_read_sectors());
+      break;
+    }
+    case kMfrClassicWriteSectors: {
+      _internal_mutable_mfr_classic_write_sectors()->::mifare::classic::sector::write::WriteSectors::MergeFrom(from._internal_mfr_classic_write_sectors());
+      break;
+    }
+    case kMfrGetVersion: {
+      _internal_mutable_mfr_get_version()->::mifare::generic::get_version::GetVersion::MergeFrom(from._internal_mfr_get_version());
+      break;
+    }
+    case MIFARE_CMD_NOT_SET: {
+      break;
+    }
+  }
+  // @@protoc_insertion_point(copy_constructor:MifareExtended)
+}
+
+void MifareExtended::SharedCtor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_MifareExtended_commands7_2eproto.base);
+  clear_has_mifare_cmd();
+}
+
+MifareExtended::~MifareExtended() {
+  // @@protoc_insertion_point(destructor:MifareExtended)
+  SharedDtor();
+}
+
+void MifareExtended::SharedDtor() {
+  if (has_mifare_cmd()) {
+    clear_mifare_cmd();
+  }
+}
+
+void MifareExtended::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const MifareExtended& MifareExtended::default_instance() {
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_MifareExtended_commands7_2eproto.base);
+  return *internal_default_instance();
+}
+
+
+void MifareExtended::clear_mifare_cmd() {
+// @@protoc_insertion_point(one_of_clear_start:MifareExtended)
+  switch (mifare_cmd_case()) {
+    case kMfrClassicReadSectors: {
+      delete mifare_cmd_.mfr_classic_read_sectors_;
+      break;
+    }
+    case kMfrClassicWriteSectors: {
+      delete mifare_cmd_.mfr_classic_write_sectors_;
+      break;
+    }
+    case kMfrGetVersion: {
+      delete mifare_cmd_.mfr_get_version_;
+      break;
+    }
+    case MIFARE_CMD_NOT_SET: {
+      break;
+    }
+  }
+  _oneof_case_[0] = MIFARE_CMD_NOT_SET;
+}
+
+
+void MifareExtended::Clear() {
+// @@protoc_insertion_point(message_clear_start:MifareExtended)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  clear_mifare_cmd();
+  _has_bits_.Clear();
+  _internal_metadata_.Clear();
+}
+
+const char* MifareExtended::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
+      // optional .mifare.classic.sector.read.ReadSectors mfr_classic_read_sectors = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+          ptr = ctx->ParseMessage(_internal_mutable_mfr_classic_read_sectors(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // optional .mifare.classic.sector.write.WriteSectors mfr_classic_write_sectors = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
+          ptr = ctx->ParseMessage(_internal_mutable_mfr_classic_write_sectors(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // optional .mifare.generic.get_version.GetVersion mfr_get_version = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
+          ptr = ctx->ParseMessage(_internal_mutable_mfr_get_version(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
+          goto success;
+        }
+        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
+      }
+    }  // switch
+  }  // while
+success:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto success;
+#undef CHK_
+}
+
+::PROTOBUF_NAMESPACE_ID::uint8* MifareExtended::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:MifareExtended)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  switch (mifare_cmd_case()) {
+    case kMfrClassicReadSectors: {
+      target = stream->EnsureSpace(target);
+      target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(
+          1, _Internal::mfr_classic_read_sectors(this), target, stream);
+      break;
+    }
+    case kMfrClassicWriteSectors: {
+      target = stream->EnsureSpace(target);
+      target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(
+          2, _Internal::mfr_classic_write_sectors(this), target, stream);
+      break;
+    }
+    case kMfrGetVersion: {
+      target = stream->EnsureSpace(target);
+      target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(
+          3, _Internal::mfr_get_version(this), target, stream);
+      break;
+    }
+    default: ;
+  }
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:MifareExtended)
+  return target;
+}
+
+size_t MifareExtended::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:MifareExtended)
+  size_t total_size = 0;
+
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  switch (mifare_cmd_case()) {
+    // optional .mifare.classic.sector.read.ReadSectors mfr_classic_read_sectors = 1;
+    case kMfrClassicReadSectors: {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *mifare_cmd_.mfr_classic_read_sectors_);
+      break;
+    }
+    // optional .mifare.classic.sector.write.WriteSectors mfr_classic_write_sectors = 2;
+    case kMfrClassicWriteSectors: {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *mifare_cmd_.mfr_classic_write_sectors_);
+      break;
+    }
+    // optional .mifare.generic.get_version.GetVersion mfr_get_version = 3;
+    case kMfrGetVersion: {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *mifare_cmd_.mfr_get_version_);
+      break;
+    }
+    case MIFARE_CMD_NOT_SET: {
+      break;
+    }
+  }
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void MifareExtended::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:MifareExtended)
+  GOOGLE_DCHECK_NE(&from, this);
+  const MifareExtended* source =
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<MifareExtended>(
+          &from);
+  if (source == nullptr) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:MifareExtended)
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:MifareExtended)
+    MergeFrom(*source);
+  }
+}
+
+void MifareExtended::MergeFrom(const MifareExtended& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:MifareExtended)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  switch (from.mifare_cmd_case()) {
+    case kMfrClassicReadSectors: {
+      _internal_mutable_mfr_classic_read_sectors()->::mifare::classic::sector::read::ReadSectors::MergeFrom(from._internal_mfr_classic_read_sectors());
+      break;
+    }
+    case kMfrClassicWriteSectors: {
+      _internal_mutable_mfr_classic_write_sectors()->::mifare::classic::sector::write::WriteSectors::MergeFrom(from._internal_mfr_classic_write_sectors());
+      break;
+    }
+    case kMfrGetVersion: {
+      _internal_mutable_mfr_get_version()->::mifare::generic::get_version::GetVersion::MergeFrom(from._internal_mfr_get_version());
+      break;
+    }
+    case MIFARE_CMD_NOT_SET: {
+      break;
+    }
+  }
+}
+
+void MifareExtended::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:MifareExtended)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void MifareExtended::CopyFrom(const MifareExtended& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:MifareExtended)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool MifareExtended::IsInitialized() const {
+  switch (mifare_cmd_case()) {
+    case kMfrClassicReadSectors: {
+      if (has_mfr_classic_read_sectors()) {
+        if (!this->mfr_classic_read_sectors().IsInitialized()) return false;
+      }
+      break;
+    }
+    case kMfrClassicWriteSectors: {
+      if (has_mfr_classic_write_sectors()) {
+        if (!this->mfr_classic_write_sectors().IsInitialized()) return false;
+      }
+      break;
+    }
+    case kMfrGetVersion: {
+      break;
+    }
+    case MIFARE_CMD_NOT_SET: {
+      break;
+    }
+  }
+  return true;
+}
+
+void MifareExtended::InternalSwap(MifareExtended* other) {
+  using std::swap;
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(_has_bits_[0], other->_has_bits_[0]);
+  swap(mifare_cmd_, other->mifare_cmd_);
+  swap(_oneof_case_[0], other->_oneof_case_[0]);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata MifareExtended::GetMetadata() const {
+  return GetMetadataStatic();
+}
+
+
 // @@protoc_insertion_point(namespace_scope)
 PROTOBUF_NAMESPACE_OPEN
 template<> PROTOBUF_NOINLINE ::Miscellaneous* Arena::CreateMaybeMessage< ::Miscellaneous >(Arena* arena) {
@@ -6691,6 +7140,9 @@ template<> PROTOBUF_NOINLINE ::Service* Arena::CreateMaybeMessage< ::Service >(A
 }
 template<> PROTOBUF_NOINLINE ::Gui* Arena::CreateMaybeMessage< ::Gui >(Arena* arena) {
   return Arena::CreateInternal< ::Gui >(arena);
+}
+template<> PROTOBUF_NOINLINE ::MifareExtended* Arena::CreateMaybeMessage< ::MifareExtended >(Arena* arena) {
+  return Arena::CreateInternal< ::MifareExtended >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

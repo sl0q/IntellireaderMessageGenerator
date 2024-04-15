@@ -26,13 +26,9 @@
 #define IR "IR"
 
 using json = nlohmann::json;
-// typedef Payload &(*MessageCreator::)
 
 class MessageCreator
 {
-    // using CommandFunction = Payload &(MessageCreator::*)(json &);
-    // typedef Payload &(*CommandFunction)(json &); // function pointer type
-
 private:
     std::string inputFilePath;
     std::unordered_map<std::string, std::function<Payload &(json &)>> commandTable;
@@ -78,6 +74,7 @@ private:
     // Mifare
     void parse_key_type(json &keyTypeJson, mifare::plus::key_type::KeyType &keyType);
     void parse_av_args(json &av2ArgsJson, mifare::av2::args::AuthenticationArguments &av2Args);
+    void parse_sector(json &sectorJson, mifare::classic::sector::sector::Sector &sector, int iSector);
 
     // Mifare classic
     Payload &generate_mfr_classic_auth_on_clear_key(json &data);
@@ -119,6 +116,11 @@ private:
     Payload &generate_mfr_ul_auth_on_sam_key(json &data);
     Payload &generate_mfr_ul_auth_clear_password(json &data);
     Payload &generate_mfr_ul_auth_sam_password(json &data);
+
+    // Mifare extended
+    Payload &generate_mfr_classic_read_sectors(json &data);
+    Payload &generate_mfr_classic_write_sectors(json &data);
+    Payload &generate_mfr_get_version(json &data);
 
     // Service
     Payload &generate_prepare_update(json &data);
