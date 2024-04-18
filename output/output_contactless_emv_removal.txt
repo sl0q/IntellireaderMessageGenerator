@@ -1,0 +1,21 @@
+Request to perform EMV Removal procedure no more than 5 seconds
+0x49 0x52 0x0 0x8 0x1 0x3 0x1 0x12 0x3 0x8 0x88 0x27 0x33 0xD8 
+SVIACAEDARIDCIgnM9g=
+emv_removal {
+  timeout: 5000
+}
+
+
+###################################################################
+
+
+Request to perform EMV Removal procedure until card is removed
+0x49 0x52 0x0 0x5 0x2 0x3 0x1 0x12 0x0 0x17 0xB8 
+SVIABQIDARIAF7g=
+emv_removal {
+}
+
+
+###################################################################
+
+

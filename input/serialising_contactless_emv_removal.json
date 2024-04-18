@@ -1,0 +1,23 @@
+{
+    "messages":
+    [
+        {   
+            "title": "Request to perform EMV Removal procedure no more than 5 seconds",
+            "moduleID": 3,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "emv_removal",
+            "data":
+            {
+                "timeout": 5000
+            }
+        },
+        {   
+            "title": "Request to perform EMV Removal procedure until card is removed",
+            "moduleID": 3,
+            "messageType": 1,
+            "messageID": 2,
+            "command": "emv_removal"
+        }
+    ]
+}

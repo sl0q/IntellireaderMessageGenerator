@@ -830,7 +830,7 @@ Payload &MessageCreator::generate_perform_transaction(json &data)
 
     performTransaction->set_amount_authorized(data.at("amountAuthorized").get<uint64_t>());
     performTransaction->set_transaction_date(data.at("transactionDate").get<std::string>());
-    performTransaction->set_transaction_time(data.at("transactionType").get<std::string>());
+    performTransaction->set_transaction_type(data.at("transactionType").get<std::string>());
     performTransaction->set_terminal_country_code(data.at("terminalCountryCode").get<std::string>());
     performTransaction->set_transaction_time(data.at("transactionTime").get<std::string>());
     performTransaction->set_transaction_currency_code(data.at("transactionCurrencyCode").get<std::string>());

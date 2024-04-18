@@ -1,0 +1,18 @@
+{
+    "messages":
+    [
+        {   
+            "title": "Poll for token empty result",
+            "moduleID": 3,
+            "messageType": 1,
+            "messageID": 1,
+            "command": "poll_for_token",
+            "data":
+            {
+                "pollingMode": "CONTINOUS_POLLING",
+                "lightUpLed": true,
+                "preferMifare": true
+            }
+        }
+    ]
+}
